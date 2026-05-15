@@ -3,7 +3,8 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>学术不端证据大师 | 你什么时候写的作业由你自己定义</title>
+    <title>学术不端证据大师 | 你咩时写的作业由你自己定义</title>
+    <!-- 核心外部库 -->
     <script src="https://cdn.tailwindcss.com"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/jszip/3.10.1/jszip.min.js"></script>
     <script src="https://unpkg.com/pdf-lib@1.17.1/dist/pdf-lib.min.js"></script>
@@ -15,16 +16,24 @@
         :root { --primary: #2563eb; --indigo: #6366f1; }
         body { background-color: #f8fafc; font-family: 'Inter', system-ui, sans-serif; color: #1e293b; min-height: 100vh; margin: 0; }
         
+        /* 页面切换动画 */
         .page-view { display: none; opacity: 0; transition: opacity 0.3s ease; }
         .page-view.active-page { display: block; opacity: 1; }
         
-        .portal-wrapper { display: flex; flex-direction: column; align-items: center; justify-content: center; min-height: 100vh; padding: 1.5rem; text-align: center; }
+        .portal-wrapper { display: flex; flex-direction: column; align-items: center; justify-content: center; min-height: 100vh; padding: 2rem; text-align: center; }
         .glass-card { background: rgba(255, 255, 255, 0.98); border: 1px solid #e2e8f0; box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.05); }
         
         .mode-mobile { max-width: 430px !important; margin: 1.5rem auto !important; height: 88vh !important; border: 10px solid #0f172a; border-radius: 3.5rem; overflow-y: auto !important; position: relative; background: #fff; box-shadow: 0 25px 50px -12px rgba(0,0,0,0.25); }
-        #map { height: 320px; width: 100%; border-radius: 1rem; z-index: 10; border: 1px solid #cbd5e1; }
-        .top-nav { position: fixed; top: 0; left: 0; right: 0; z-index: 100; background: rgba(255,255,255,0.95); backdrop-filter: blur(10px); border-bottom: 1px solid #e2e8f0; }
+
+        /* 地图锁定 */
+        #map { height: 350px; width: 100%; border-radius: 1.25rem; z-index: 10; border: 1px solid #cbd5e1; margin: 1rem 0; }
+        
+        .top-nav { position: fixed; top: 0; left: 0; right: 0; z-index: 100; background: rgba(255,255,255,0.9); backdrop-filter: blur(10px); border-bottom: 1px solid #e2e8f0; }
+
         .strategy-radio:checked + .radio-card { border-color: var(--primary); background-color: #eff6ff; }
+        .radio-dot-inner { transform: scale(0); transition: transform 0.2s ease; }
+        .strategy-radio:checked + .radio-card .radio-dot-inner { transform: scale(1); }
+
         .btn-main { transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1); }
         .btn-main:active { transform: scale(0.97); }
         .loading-pulse { animation: pulse 1.5s infinite; }
@@ -33,6 +42,7 @@
 </head>
 <body>
 
+    <!-- 顶部导航 -->
     <nav id="sub-nav" class="top-nav px-6 py-4 flex items-center justify-between hidden">
         <button onclick="navigateTo('page-portal')" class="flex items-center gap-2 text-slate-500 font-bold text-[11px] uppercase tracking-wider hover:text-blue-600 transition-colors">
             <svg width="18" height="18" fill="none" stroke="currentColor" stroke-width="2.5" viewBox="0 0 24 24"><path d="M19 12H5M12 19l-7-7 7-7"/></svg> 返回首页
@@ -40,18 +50,20 @@
         <span class="text-slate-900 font-black text-xs uppercase italic tracking-tighter">学术不端证据大师 / 系统后台</span>
     </nav>
 
+    <!-- 设备模拟切换 -->
     <div class="fixed bottom-6 right-6 z-[110] hidden lg:flex bg-white/90 backdrop-blur p-1 rounded-2xl border border-slate-200 shadow-2xl">
         <button onclick="setDevice('pc')" id="pc-toggle" class="p-2 bg-slate-900 text-white rounded-xl transition-all"><svg width="20" height="20" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><rect x="2" y="3" width="20" height="14" rx="2"/><path d="M8 21h8m-4-4v4"/></svg></button>
         <button onclick="setDevice('mobile')" id="mobile-toggle" class="p-2 text-slate-400 hover:text-slate-600 rounded-xl transition-all"><svg width="20" height="20" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><rect x="5" y="2" width="14" height="20" rx="2"/><path d="M12 18h.01"/></svg></button>
     </div>
 
     <div id="app-container" class="min-h-screen">
-        <!-- [1] 门户 -->
+        
+        <!-- [1] 门户入口 -->
         <section id="page-portal" class="page-view active-page">
             <div class="portal-wrapper">
                 <div class="mb-12 space-y-4">
-                    <div class="inline-flex p-5 bg-blue-600 rounded-[2.2rem] shadow-xl shadow-blue-100 mb-4">
-                        <svg width="44" height="44" fill="none" stroke="white" stroke-width="2.5" viewBox="0 0 24 24"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/><path d="M9 12l2 2 4-4"/></svg>
+                    <div class="inline-flex p-6 bg-blue-600 rounded-[2.5rem] shadow-2xl shadow-blue-100 mb-4">
+                        <svg width="48" height="48" fill="none" stroke="white" stroke-width="2.5" viewBox="0 0 24 24"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/><path d="M9 12l2 2 4-4"/></svg>
                     </div>
                     <h1 class="text-4xl md:text-5xl font-black text-slate-900 tracking-tight">学术不端证据大师</h1>
                     <p class="text-blue-600 font-bold uppercase tracking-[0.25em] text-xs">你什么时候写的作业，由你自己定义</p>
@@ -62,102 +74,115 @@
                             <svg width="30" height="30" fill="none" stroke="currentColor" stroke-width="2.5" viewBox="0 0 24 24"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><path d="M14 2v6h6M16 13H8M16 17H8"/></svg>
                         </div>
                         <div><h2 class="text-xl font-black text-slate-800 uppercase">文档证据架构</h2><p class="text-[11px] text-slate-400 mt-2 leading-relaxed">重置 Word / PDF 保存时间<br>注入非线性修订指纹 ID</p></div>
-                        <span class="px-6 py-2 bg-slate-900 text-white rounded-full text-[10px] font-black tracking-widest uppercase">立即进入</span>
+                        <span class="px-8 py-2 bg-slate-900 text-white rounded-full text-[10px] font-black tracking-widest uppercase">ENTER SYSTEM</span>
                     </div>
                     <div onclick="navigateTo('page-photo')" class="group cursor-pointer glass-card rounded-[2.5rem] p-10 flex flex-col items-center space-y-6 transition-all hover:border-indigo-500 hover:-translate-y-2">
                         <div class="w-16 h-16 bg-indigo-50 text-indigo-600 rounded-2xl flex items-center justify-center group-hover:bg-indigo-600 group-hover:text-white transition-all">
                             <svg width="30" height="30" fill="none" stroke="currentColor" stroke-width="2.5" viewBox="0 0 24 24"><path d="M23 19a2 2 0 0 1-2 2H3a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h4l2-3h6l2 3h4a2 2 0 0 1 2 2z"/><circle cx="12" cy="13" r="4"/></svg>
                         </div>
                         <div><h2 class="text-xl font-black text-slate-800 uppercase">影像证据架构</h2><p class="text-[11px] text-slate-400 mt-2 leading-relaxed">伪装照片拍摄坐标与物理设备<br>同步修改系统文件物理时间</p></div>
-                        <span class="px-6 py-2 bg-slate-900 text-white rounded-full text-[10px] font-black tracking-widest uppercase">立即进入</span>
+                        <span class="px-8 py-2 bg-slate-900 text-white rounded-full text-[10px] font-black tracking-widest uppercase">ENTER SYSTEM</span>
                     </div>
                 </div>
             </div>
         </section>
 
-        <!-- [2] 文档页 -->
+        <!-- [2] 文档功能页 -->
         <section id="page-doc" class="page-view pt-24 pb-12 px-6 max-w-7xl mx-auto">
             <div class="grid grid-cols-1 lg:grid-cols-12 gap-8">
                 <div class="lg:col-span-7 space-y-6">
                     <div class="glass-card rounded-3xl p-8">
-                        <label class="group relative flex flex-col items-center justify-center w-full h-40 border-2 border-dashed border-slate-200 rounded-3xl cursor-pointer hover:bg-blue-50 transition-all">
+                        <label class="group relative flex flex-col items-center justify-center w-full h-44 border-2 border-dashed border-slate-200 rounded-3xl cursor-pointer hover:bg-blue-50 transition-all duration-300">
                             <div id="doc-placeholder" class="text-center">
-                                <svg class="text-blue-500 mx-auto mb-3" width="32" height="32" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path d="M9 12h6m-6 4h6m2 5H7a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h5.586a1 1 0 0 1 .707.293l5.414 5.414a1 1 0 0 1 .293.707V19a2 2 0 0 1-2 2z"/></svg>
-                                <p class="text-xs text-slate-600 font-bold uppercase">导入证据文件 (DOCX/PDF)</p>
+                                <svg class="text-blue-500 mx-auto mb-4" width="36" height="36" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path d="M9 12h6m-6 4h6m2 5H7a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h5.586a1 1 0 0 1 .707.293l5.414 5.414a1 1 0 0 1 .293.707V19a2 2 0 0 1-2 2z"/></svg>
+                                <p class="text-sm text-slate-600 font-bold uppercase tracking-tight">导入证据文件 (DOCX / PDF)</p>
                             </div>
                             <div id="doc-status" class="hidden text-center">
                                 <p id="doc-name" class="text-blue-600 font-black text-sm truncate max-w-xs"></p>
-                                <p class="text-[9px] text-slate-400 font-bold mt-1 uppercase">链路解析完成</p>
+                                <p class="text-[9px] text-slate-400 font-bold mt-1 uppercase tracking-widest">证据链路映射成功</p>
                             </div>
                             <input id="doc-input" type="file" accept=".docx,.pdf" class="hidden" />
                         </label>
                     </div>
+
                     <div class="glass-card rounded-3xl p-8 relative overflow-hidden">
-                        <div class="flex items-center justify-between mb-8"><h3 class="text-lg font-black text-slate-800 italic uppercase">元数据架构配置</h3><button id="doc-magic" disabled class="px-4 py-2 bg-indigo-600 text-white rounded-xl text-[9px] font-black uppercase shadow-lg btn-main">一键预设</button></div>
+                        <div class="flex items-center justify-between mb-8">
+                            <h3 class="text-lg font-black text-slate-800 italic uppercase">元数据架构配置</h3>
+                            <div class="flex gap-2">
+                                <button id="doc-view-all" disabled class="px-4 py-2 bg-slate-100 text-slate-600 rounded-xl text-[9px] font-black uppercase transition-colors">底层指纹</button>
+                                <button id="doc-magic" disabled class="px-4 py-2 bg-indigo-600 text-white rounded-xl text-[9px] font-black uppercase shadow-lg btn-main">一键预设</button>
+                            </div>
+                        </div>
                         <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
-                            <div class="space-y-1.5"><label class="text-[9px] font-black text-slate-400 uppercase tracking-widest ml-1">作者</label><input type="text" id="doc-author" disabled class="w-full px-4 py-3 bg-white border border-slate-200 rounded-xl outline-none text-xs font-bold shadow-inner"></div>
-                            <div class="space-y-1.5"><label class="text-[9px] font-black text-slate-400 uppercase tracking-widest ml-1">最后保存人员</label><input type="text" id="doc-lastModifiedBy" disabled class="w-full px-4 py-3 bg-white border border-slate-200 rounded-xl outline-none text-xs font-bold shadow-inner"></div>
-                            <div class="md:col-span-2 space-y-1.5"><label class="text-[9px] font-black text-slate-400 uppercase tracking-widest ml-1">注册组织/机构</label><input type="text" id="doc-company" disabled class="w-full px-4 py-3 bg-white border border-slate-200 rounded-xl outline-none text-xs font-bold shadow-inner"></div>
-                            <div class="space-y-1.5"><label class="text-[9px] font-black text-slate-400 uppercase tracking-widest ml-1">创建时间</label><input type="datetime-local" id="doc-created" step="1" disabled class="w-full px-4 py-3 bg-white border border-slate-200 rounded-xl outline-none text-xs font-bold shadow-inner"></div>
-                            <div class="space-y-1.5"><label class="text-[9px] font-black text-slate-400 uppercase tracking-widest ml-1">保存时间</label><input type="datetime-local" id="doc-modified" step="1" disabled class="w-full px-4 py-3 bg-white border border-slate-200 rounded-xl outline-none text-xs font-bold shadow-inner"></div>
+                            <div class="space-y-1.5"><label class="text-[9px] font-black text-slate-400 uppercase tracking-widest ml-1">所有者</label><input type="text" id="doc-author" disabled class="w-full px-5 py-3.5 bg-white border border-slate-200 rounded-2xl outline-none text-sm font-bold shadow-inner"></div>
+                            <div class="space-y-1.5"><label class="text-[9px] font-black text-slate-400 uppercase tracking-widest ml-1">最后保存人</label><input type="text" id="doc-lastModifiedBy" disabled class="w-full px-5 py-3.5 bg-white border border-slate-200 rounded-2xl outline-none text-sm font-bold shadow-inner"></div>
+                            <div class="md:col-span-2 space-y-1.5"><label class="text-[9px] font-black text-slate-400 uppercase tracking-widest ml-1">注册组织机构</label><input type="text" id="doc-company" disabled class="w-full px-5 py-3.5 bg-white border border-slate-200 rounded-2xl outline-none text-sm font-bold shadow-inner"></div>
+                            <div class="space-y-1.5"><label class="text-[9px] font-black text-slate-400 uppercase tracking-widest ml-1">逻辑创建时间</label><input type="datetime-local" id="doc-created" step="1" disabled class="w-full px-5 py-3.5 bg-white border border-slate-200 rounded-2xl outline-none text-sm font-bold shadow-inner"></div>
+                            <div class="space-y-1.5"><label class="text-[9px] font-black text-slate-400 uppercase tracking-widest ml-1">物理保存时间</label><input type="datetime-local" id="doc-modified" step="1" disabled class="w-full px-5 py-3.5 bg-white border border-slate-200 rounded-2xl outline-none text-sm font-bold shadow-inner"></div>
                             <div id="docx-only-container" class="contents">
-                                <div class="space-y-1.5"><label class="text-[9px] font-black text-blue-600 uppercase tracking-widest ml-1">拟态时长 (MIN)</label><input type="number" id="doc-time" disabled class="w-full px-4 py-3 bg-blue-50 border border-blue-100 rounded-xl text-xs font-black text-blue-700 outline-none"></div>
-                                <div class="space-y-1.5"><label class="text-[9px] font-black text-blue-600 uppercase tracking-widest ml-1">修订版本指纹</label><input type="number" id="doc-revision" disabled class="w-full px-4 py-3 bg-blue-50 border border-blue-100 rounded-xl text-xs font-black text-blue-700 outline-none"></div>
+                                <div class="space-y-1.5"><label class="text-[9px] font-black text-blue-600 uppercase tracking-widest ml-1">拟态时长 (MIN)</label><input type="number" id="doc-time" disabled class="w-full px-5 py-3.5 bg-blue-50 border border-blue-100 rounded-2xl text-sm font-black text-blue-700 outline-none"></div>
+                                <div class="space-y-1.5"><label class="text-[9px] font-black text-blue-600 uppercase tracking-widest ml-1">修订版本指纹</label><input type="number" id="doc-revision" disabled class="w-full px-5 py-3.5 bg-blue-50 border border-blue-100 rounded-2xl text-sm font-black text-blue-700 outline-none"></div>
                             </div>
                         </div>
                         <div id="doc-overlay" class="absolute inset-0 bg-white/80 backdrop-blur-[1px] z-20 flex items-center justify-center rounded-3xl"><p class="text-[10px] font-black text-slate-400 uppercase tracking-widest">请导入证据文件</p></div>
                     </div>
                 </div>
+
+                <!-- 右列：策略 -->
                 <div class="lg:col-span-5 space-y-6">
                     <div class="glass-card rounded-3xl p-8">
-                        <h3 class="text-[10px] font-black text-slate-400 uppercase tracking-widest mb-6">选择导出策略</h3>
-                        <div class="space-y-3">
-                            <label class="block cursor-pointer"><input type="radio" name="doc-strategy" value="erase" class="hidden peer strategy-radio"><div class="radio-card p-5 border-2 border-slate-100 rounded-2xl transition-all peer-checked:border-blue-600 peer-checked:bg-blue-50"><p class="text-sm font-bold text-slate-800">彻底净化模式</p><p class="text-[10px] text-slate-500 mt-1 leading-relaxed">抹除所有修订记录与作者指纹。</p></div></label>
-                            <label class="block cursor-pointer"><input type="radio" name="doc-strategy" value="forge" checked class="hidden peer strategy-radio"><div class="radio-card p-5 border-2 border-slate-100 rounded-2xl transition-all peer-checked:border-blue-600 peer-checked:bg-blue-50"><p class="text-sm font-bold text-slate-800">虚假修改模式</p><p class="text-[10px] text-slate-500 mt-1 leading-relaxed">注入随机修订指纹（RSID），完美模拟真实历史。</p></div></label>
+                        <h3 class="text-[10px] font-black text-slate-400 uppercase tracking-widest mb-8">选择导出策略</h3>
+                        <div class="space-y-4">
+                            <label class="block cursor-pointer"><input type="radio" name="doc-strategy" value="erase" class="hidden peer strategy-radio"><div class="radio-card p-6 border-2 border-slate-100 rounded-[2rem] transition-all peer-checked:border-blue-600 peer-checked:bg-blue-50 shadow-sm"><p class="text-sm font-bold text-slate-800">彻底净化模式</p><p class="text-[10px] text-slate-500 mt-1 leading-relaxed">抹除所有修订痕迹与作者指纹。使文档像新创建的一样干净。</p></div></label>
+                            <label class="block cursor-pointer"><input type="radio" name="doc-strategy" value="forge" checked class="hidden peer strategy-radio"><div class="radio-card p-6 border-2 border-slate-100 rounded-[2rem] transition-all peer-checked:border-blue-600 peer-checked:bg-blue-50 shadow-sm"><p class="text-sm font-bold text-slate-800">伪造修订历史</p><p class="text-[10px] text-slate-500 mt-1 leading-relaxed">注入随机修订指纹（RSID），完美模拟长期的真实手工修改历史。</p></div></label>
                         </div>
                         <div class="mt-8 pt-8 border-t border-slate-100 space-y-6">
                             <div class="flex items-center gap-3 p-4 bg-slate-50 rounded-2xl">
-                                <input type="checkbox" id="doc-zip" checked class="w-5 h-5 rounded-lg text-blue-600 border-slate-300"><span class="text-xs font-bold text-slate-700">启用隧道：同步物理日期</span>
+                                <input type="checkbox" id="doc-zip" checked class="w-5 h-5 rounded-lg text-blue-600 border-slate-300"><span class="text-xs font-bold text-slate-700">启用隧道：同步文件系统日期</span>
                             </div>
-                            <button id="doc-download" disabled class="w-full py-4 bg-slate-900 text-white rounded-2xl font-black text-sm btn-main shadow-xl uppercase tracking-widest">执行架构导出</button>
+                            <button id="doc-download" disabled class="w-full py-5 bg-slate-900 text-white rounded-[2rem] font-black text-lg btn-main shadow-xl disabled:opacity-20 uppercase tracking-widest">执行证据导出</button>
                         </div>
                     </div>
                 </div>
             </div>
         </section>
 
-        <!-- [3] 影像页 -->
+        <!-- [3] 影像功能页 -->
         <section id="page-photo" class="page-view pt-24 pb-12 px-6 max-w-7xl mx-auto">
             <div class="grid grid-cols-1 lg:grid-cols-2 gap-8">
                 <div class="space-y-6">
                     <div class="glass-card rounded-3xl p-8">
-                        <label class="group relative flex flex-col items-center justify-center w-full h-40 border-2 border-dashed border-slate-200 rounded-3xl cursor-pointer hover:bg-indigo-50 transition-all">
+                        <label class="group relative flex flex-col items-center justify-center w-full h-40 border-2 border-dashed border-slate-200 rounded-3xl cursor-pointer hover:bg-indigo-50 transition-all duration-300">
                             <div id="photo-placeholder" class="text-center">
-                                <svg class="text-indigo-500 mx-auto mb-3" width="32" height="32" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path d="M3 9a2 2 0 0 1 2-2h.93a2 2 0 0 0 1.664-.89l.812-1.22A2 2 0 0 1 10.07 4h3.86a2 2 0 0 1 1.664.89l.812 1.22A2 2 0 0 0 18.07 7H19a2 2 0 0 1 2 2v9a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V9z"/><circle cx="12" cy="13" r="3"/></svg>
-                                <p class="text-xs text-slate-500 font-black uppercase">导入影像证据 (JPG)</p>
+                                <svg class="text-indigo-500 mx-auto mb-3" width="36" height="36" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path d="M3 9a2 2 0 0 1 2-2h.93a2 2 0 0 0 1.664-.89l.812-1.22A2 2 0 0 1 10.07 4h3.86a2 2 0 0 1 1.664.89l.812 1.22A2 2 0 0 0 18.07 7H19a2 2 0 0 1 2 2v9a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V9z"/><circle cx="12" cy="13" r="3"/></svg>
+                                <p class="text-xs text-slate-500 font-black uppercase tracking-tight">导入影像证据 (JPEG)</p>
                             </div>
                             <div id="photo-status" class="hidden text-center">
                                 <p id="photo-name" class="text-indigo-600 font-black text-sm truncate max-w-xs"></p>
-                                <p class="text-[9px] text-slate-400 font-bold mt-1 uppercase">影像流对齐成功</p>
+                                <p class="text-[9px] text-slate-400 font-bold mt-1 uppercase tracking-widest">影像流对齐成功</p>
                             </div>
                             <input id="photo-input" type="file" accept=".jpg,.jpeg" class="hidden" />
                         </label>
                     </div>
+
                     <div id="photo-editor" class="glass-card rounded-3xl p-8 relative overflow-hidden">
-                        <div class="flex items-center justify-between mb-8"><h3 class="text-lg font-black text-slate-800 italic uppercase">证据指纹重构</h3><button id="photo-magic" disabled class="px-4 py-2 bg-indigo-600 text-white rounded-xl text-[9px] font-black uppercase btn-main">自动预设</button></div>
+                        <div class="flex items-center justify-between mb-8">
+                            <h3 class="text-lg font-black text-slate-800 italic uppercase">证据指纹重构</h3>
+                            <button id="photo-magic" disabled class="px-4 py-2 bg-indigo-600 text-white rounded-xl text-[9px] font-black uppercase shadow-lg btn-main">自动预设</button>
+                        </div>
                         <div class="grid grid-cols-2 gap-4 mb-6">
-                            <div class="space-y-1.5"><label class="text-[9px] font-black text-slate-400 uppercase ml-1">厂商</label><input type="text" id="photo-make" disabled class="w-full px-4 py-2.5 bg-white border border-slate-200 rounded-xl outline-none text-xs font-bold shadow-inner"></div>
-                            <div class="space-y-1.5"><label class="text-[9px] font-black text-slate-400 uppercase ml-1">型号</label><input type="text" id="photo-model" disabled class="w-full px-4 py-2.5 bg-white border border-slate-200 rounded-xl outline-none text-xs font-bold shadow-inner"></div>
+                            <div class="space-y-1.5"><label class="text-[9px] font-black text-slate-400 uppercase tracking-widest ml-1">厂商</label><input type="text" id="photo-make" disabled class="w-full px-4 py-2.5 bg-white border border-slate-200 rounded-xl outline-none text-xs font-bold shadow-inner"></div>
+                            <div class="space-y-1.5"><label class="text-[9px] font-black text-slate-400 uppercase tracking-widest ml-1">型号</label><input type="text" id="photo-model" disabled class="w-full px-4 py-2.5 bg-white border border-slate-200 rounded-xl outline-none text-xs font-bold shadow-inner"></div>
                         </div>
                         <div class="p-5 bg-slate-50 rounded-2xl border border-slate-100 mb-6 space-y-4">
                             <h4 class="text-[9px] font-black text-indigo-600 uppercase tracking-widest border-b pb-1.5">光学架构参数</h4>
                             <div class="grid grid-cols-2 gap-3">
                                 <div class="col-span-2 space-y-1"><label class="text-[8px] font-bold text-slate-400 uppercase">镜头</label><input type="text" id="photo-lens" disabled class="w-full px-3 py-2 bg-white border border-slate-200 rounded-lg text-[11px] font-bold shadow-inner"></div>
-                                <div class="space-y-1"><label class="text-[8px] font-bold text-slate-400 uppercase">焦距</label><input type="number" id="photo-focal" disabled class="w-full px-3 py-2 bg-white border border-slate-200 rounded-lg text-[11px] font-bold shadow-inner"></div>
-                                <div class="space-y-1"><label class="text-[8px] font-bold text-slate-400 uppercase">光圈</label><input type="number" id="photo-aperture" disabled class="w-full px-3 py-2 bg-white border border-slate-200 rounded-lg text-[11px] font-bold shadow-inner"></div>
+                                <div class="space-y-1"><label class="text-[8px] font-bold text-slate-400 uppercase">焦距 (MM)</label><input type="number" id="photo-focal" step="0.1" disabled class="w-full px-3 py-2 bg-white border border-slate-200 rounded-lg text-[11px] font-bold shadow-inner"></div>
+                                <div class="space-y-1"><label class="text-[8px] font-bold text-slate-400 uppercase">光圈 (F/)</label><input type="number" id="photo-aperture" step="0.1" disabled class="w-full px-3 py-2 bg-white border border-slate-200 rounded-lg text-[11px] font-bold shadow-inner"></div>
                                 <div class="space-y-1"><label class="text-[8px] font-bold text-slate-400 uppercase">快门</label><input type="text" id="photo-shutter" disabled class="w-full px-3 py-2 bg-white border border-slate-200 rounded-lg text-[11px] font-bold shadow-inner"></div>
                                 <div class="space-y-1"><label class="text-[8px] font-bold text-slate-400 uppercase">ISO</label><input type="number" id="photo-iso" disabled class="w-full px-3 py-2 bg-white border border-slate-200 rounded-lg text-[11px] font-bold shadow-inner"></div>
-                                <div class="col-span-2 space-y-1"><label class="text-[8px] font-bold text-slate-400 uppercase">物理拍摄时间</label><input type="datetime-local" id="photo-time" step="1" disabled class="w-full px-3 py-2 bg-white border border-slate-200 rounded-lg text-[11px] font-bold shadow-inner"></div>
+                                <div class="col-span-2 space-y-1"><label class="text-[8px] font-bold text-slate-400 uppercase">拍摄物理时间</label><input type="datetime-local" id="photo-time" step="1" disabled class="w-full px-3 py-2 bg-white border border-slate-200 rounded-lg text-[11px] font-bold shadow-inner"></div>
                             </div>
                         </div>
                         <div id="photo-overlay" class="absolute inset-0 bg-white/80 backdrop-blur-[1px] z-20 flex items-center justify-center rounded-3xl"><p class="text-[10px] font-black text-slate-400 uppercase tracking-widest">请导入影像证据</p></div>
@@ -166,33 +191,83 @@
 
                 <div class="space-y-6">
                     <div class="glass-card rounded-3xl p-8">
-                        <h3 class="text-[10px] font-black text-slate-400 uppercase tracking-widest mb-6">地理证据重塑</h3>
+                        <h3 class="text-[10px] font-black text-slate-400 uppercase tracking-widest mb-6">地理证据定点</h3>
                         <div class="flex gap-2 mb-4">
-                            <input type="text" id="photo-search" placeholder="搜索全球地理坐标..." class="flex-1 px-4 py-2 bg-white border border-slate-200 rounded-xl text-xs font-bold outline-none shadow-sm">
+                            <input type="text" id="photo-search" placeholder="搜索全球定点 (中文/英文)..." class="flex-1 px-4 py-2 bg-white border border-slate-200 rounded-xl text-xs font-bold outline-none shadow-sm">
                             <button id="photo-search-btn" class="px-5 py-2 bg-slate-900 text-white rounded-xl text-[10px] font-black uppercase btn-main">搜索</button>
                         </div>
                         <div id="map"></div>
                         <div class="grid grid-cols-2 gap-4 mt-6">
-                            <div class="space-y-1"><label class="text-[9px] font-bold text-slate-400">纬度 (LAT)</label><input type="number" id="photo-lat" step="any" disabled class="w-full px-3 py-2 bg-slate-50 border border-slate-100 rounded-xl text-[11px] font-mono font-bold shadow-inner"></div>
-                            <div class="space-y-1"><label class="text-[9px] font-bold text-slate-400">经度 (LON)</label><input type="number" id="photo-lon" step="any" disabled class="w-full px-3 py-2 bg-slate-50 border border-slate-100 rounded-xl text-[11px] font-mono font-bold shadow-inner"></div>
+                            <div class="space-y-1"><label class="text-[9px] font-bold text-slate-400 tracking-widest">纬度 (LAT)</label><input type="number" id="photo-lat" step="any" disabled class="w-full px-3 py-2 bg-slate-50 border border-slate-100 rounded-xl text-[11px] font-mono font-bold shadow-inner"></div>
+                            <div class="space-y-1"><label class="text-[9px] font-bold text-slate-400 tracking-widest">经度 (LON)</label><input type="number" id="photo-lon" step="any" disabled class="w-full px-3 py-2 bg-slate-50 border border-slate-100 rounded-xl text-[11px] font-mono font-bold shadow-inner"></div>
                         </div>
                     </div>
+
                     <div class="glass-card rounded-3xl p-8">
                         <div class="flex items-center gap-3 mb-6">
-                            <input type="checkbox" id="photo-zip" checked class="w-6 h-6 rounded-lg text-indigo-600 border-slate-300"><span class="text-xs font-bold text-slate-700 leading-tight">启用影像隧道：解压后物理对齐</span>
+                            <input type="checkbox" id="photo-zip" checked class="w-6 h-6 rounded-lg text-indigo-600 border-slate-300 focus:ring-indigo-500"><span class="text-xs font-bold text-slate-700 leading-tight">启用影像隧道：解压后物理对齐</span>
                         </div>
-                        <button id="photo-download" disabled class="w-full py-4 bg-gradient-to-r from-indigo-700 to-blue-800 text-white rounded-2xl font-black text-sm btn-main shadow-xl uppercase tracking-widest">注入架构并导出</button>
+                        <button id="photo-download" disabled class="w-full py-4 bg-gradient-to-r from-indigo-700 to-blue-800 text-white rounded-2xl font-black text-sm btn-main shadow-xl uppercase tracking-widest transition-all">注入架构并导出</button>
                     </div>
                 </div>
             </div>
         </section>
     </div>
 
+    <!-- 看板 Modal -->
+    <div id="info-modal" class="hidden fixed inset-0 bg-slate-900/60 z-[200] flex items-center justify-center p-6 backdrop-blur-md">
+        <div class="glass-card w-full max-w-2xl max-h-[85vh] flex flex-col bg-white rounded-[2rem] shadow-2xl overflow-hidden">
+            <div class="p-6 border-b border-slate-100 flex justify-between items-center bg-white">
+                <h2 class="text-xl font-bold text-slate-900 font-black italic">底层数据分析</h2>
+                <button onclick="el('info-modal').classList.add('hidden')" class="p-2 text-slate-400 hover:text-slate-900 text-2xl">&times;</button>
+            </div>
+            <div class="p-0 overflow-y-auto flex-1 bg-white">
+                <table class="w-full text-sm text-left">
+                    <thead class="text-[10px] text-slate-400 uppercase tracking-widest bg-slate-50/80 sticky top-0">
+                        <tr><th class="px-8 py-4 font-bold">属性标签</th><th class="px-8 py-4 font-bold">底层数据</th></tr>
+                    </thead>
+                    <tbody id="info-modal-body" class="divide-y divide-slate-50 font-mono text-xs"></tbody>
+                </table>
+            </div>
+            <div class="p-6 border-t border-slate-100 bg-white text-right">
+                <button onclick="el('info-modal').classList.add('hidden')" class="px-8 py-2.5 bg-slate-900 text-white rounded-xl text-xs font-bold btn-main">确认</button>
+            </div>
+        </div>
+    </div>
+
     <script>
-        let currentFileBuffer = null, originalFileName = "", fileType = "", docWords = 0, map = null, marker = null, currentZipInstance = null, originalExif = null;
+        // --- 全局状态 ---
+        let currentFileBuffer = null, originalFileName = "", fileType = "", map = null, marker = null, currentZipInstance = null, originalExif = null;
         const el = (id) => document.getElementById(id);
 
-        // --- 核心驱动 ---
+        // --- 核心工具：标准化 DataURL 修复 Given data is not jpeg ---
+        function ensureJpegDataUrl(dataUrl) {
+            if (!dataUrl) return "";
+            const commaIndex = dataUrl.indexOf(",");
+            const basePart = commaIndex === -1 ? dataUrl : dataUrl.substring(commaIndex + 1);
+            return "data:image/jpeg;base64," + basePart;
+        }
+
+        // --- 经纬度逻辑修复：高精度度分秒转换 ---
+        function dmsToDecimal(dms, ref) {
+            if (!dms || dms.length < 3) return 0;
+            const d = dms[0][0]/dms[0][1];
+            const m = dms[1][0]/dms[1][1];
+            const s = dms[2][0]/dms[2][1];
+            let dec = d + (m / 60) + (s / 3600);
+            if (ref === 'S' || ref === 'W') dec = -dec;
+            return dec;
+        }
+
+        function degToDmsArray(deg) {
+            const absDeg = Math.abs(deg);
+            const d = Math.floor(absDeg);
+            const m = Math.floor((absDeg - d) * 60);
+            const s = Math.round((absDeg - d - m / 60) * 3600 * 100);
+            return [[d, 1], [m, 1], [s, 100]];
+        }
+
+        // --- 路由：进入页面强制复位并刷新地图 ---
         function navigateTo(pageId) {
             const target = el(pageId);
             const subNav = el('sub-nav');
@@ -201,7 +276,7 @@
             document.querySelectorAll('.page-view').forEach(p => p.classList.remove('active-page'));
             target.classList.add('active-page');
             
-            // 彻底修复：瞬间复位，禁止下滑
+            // 解决“下滑”问题
             window.scrollTo({ top: 0, behavior: 'instant' });
 
             if (subNav) {
@@ -209,67 +284,53 @@
                 else subNav.classList.remove('hidden');
             }
 
-            // 地图修复逻辑：仅在进入影像页面时执行，且加上延时等待动画完成
+            // 解决“地图显示不全”问题
             if(pageId === 'page-photo') {
                 if(!map) initMap();
                 setTimeout(() => { 
                     if(map) {
                         map.invalidateSize(); 
-                        if(marker) map.setView(marker.getLatLng(), map.getZoom());
-                        else map.setView([39.9, 116.4], 11);
+                        if(marker) map.panTo(marker.getLatLng());
                     }
                 }, 400); 
+                // 二次刷新防止动画残留
+                setTimeout(() => map && map.invalidateSize(), 800);
             }
         }
 
-        function setDevice(mode) {
-            const c = el('app-container');
-            const pt = el('pc-toggle'), mt = el('mobile-toggle');
-            if(!c) return;
-            if(mode === 'mobile') {
-                c.classList.add('mode-mobile');
-                if(mt) mt.classList.add('bg-slate-900','text-white'); 
-                if(pt) pt.classList.remove('bg-slate-900','text-white');
-            } else {
-                c.classList.remove('mode-mobile');
-                if(pt) pt.classList.add('bg-slate-900','text-white'); 
-                if(mt) mt.classList.remove('bg-slate-900','text-white');
-            }
-            if(map) setTimeout(() => map.invalidateSize(), 600);
-        }
-
+        // --- 地图初始化 ---
         function initMap() {
             if(map) return;
-            const mapDiv = el('map');
-            if(!mapDiv) return;
-            map = L.map('map').setView([39.9, 116.4], 11);
-            L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', { attribution: '© OSM' }).addTo(map);
+            map = L.map('map', { zoomControl: false }).setView([39.9, 116.4], 11);
+            L.control.zoom({ position: 'bottomright' }).addTo(map);
+            L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', { 
+                attribution: '© OSM' 
+            }).addTo(map);
             map.on('click', (e) => updateMarker(e.latlng.lat, e.latlng.lng));
         }
 
         function updateMarker(lat, lon, zoom = null) {
             if(!map) return;
-            const latInp = el('photo-lat'), lonInp = el('photo-lon');
-            if(latInp) latInp.value = lat.toFixed(6);
-            if(lonInp) lonInp.value = lon.toFixed(6);
-            
+            el('photo-lat').value = lat.toFixed(6); 
+            el('photo-lon').value = lon.toFixed(6);
             if(marker) map.removeLayer(marker);
             marker = L.marker([lat, lon], {draggable: true}).addTo(map);
             marker.on('dragend', () => {
                 const pos = marker.getLatLng();
-                if(latInp) latInp.value = pos.lat.toFixed(6); 
-                if(lonInp) lonInp.value = pos.lng.toFixed(6);
+                el('photo-lat').value = pos.lat.toFixed(6); 
+                el('photo-lon').value = pos.lng.toFixed(6);
             });
             if(zoom) map.setView([lat, lon], zoom);
         }
 
-        // --- 搜索功能加固 ---
+        // --- 修复：GitHub 下的搜索功能 ---
         el('photo-search-btn').onclick = async () => {
             const q = el('photo-search').value.trim(); if(!q) return;
             const btn = el('photo-search-btn');
             btn.disabled = true; btn.textContent = "...";
             try {
-                const res = await fetch(`https://nominatim.openstreetmap.org/search?format=json&q=${encodeURIComponent(q)}&limit=1`, {
+                // 使用标准 Nominatim 接口，并添加必需的请求参数
+                const res = await fetch(`https://nominatim.openstreetmap.org/search?format=json&q=${encodeURIComponent(q)}&limit=1&addressdetails=1`, {
                     headers: { 'Accept-Language': 'zh-CN,zh;q=0.9' }
                 });
                 const data = await res.json();
@@ -277,23 +338,17 @@
                     const lat = parseFloat(data[0].lat), lon = parseFloat(data[0].lon);
                     updateMarker(lat, lon, 14);
                 } else {
-                    alert("未找到该地点，请尝试输入更详细的名称。");
+                    alert("搜索结果为空，请尝试输入具体地名。");
                 }
             } catch(e) { 
-                console.error(e);
-                alert("搜索接口繁忙，请直接在地图上点击选点。");
+                console.error("Search Error:", e);
+                alert("搜索服务响应缓慢，请稍后再试或在地图上点击取点。");
             } finally {
                 btn.disabled = false; btn.textContent = "搜索";
             }
         };
 
-        // --- 数据标准化与处理逻辑 ---
-        const ensureJpegDataUrl = (dataUrl) => {
-            if (!dataUrl) return "";
-            const commaIndex = dataUrl.indexOf(",");
-            return "data:image/jpeg;base64," + (commaIndex === -1 ? dataUrl : dataUrl.substring(commaIndex + 1));
-        };
-
+        // --- 影像处理：彻底解决注入失败 ---
         const isoToLocal = (iso) => iso ? new Date(new Date(iso).getTime() - new Date().getTimezoneOffset() * 60000).toISOString().slice(0, 19) : "";
         const extractTag = (xml, reg) => (xml.match(reg) || [])[1] || "";
         const replaceTag = (xml, tag, val, parent) => {
@@ -303,6 +358,104 @@
             return xml.replace(pr, `<${tag}>${val}</${tag}></${parent}>`);
         };
 
+        el('photo-input').onchange = async (e) => {
+            const file = e.target.files[0]; if(!file) return;
+            originalFileName = file.name; el('photo-name').textContent = file.name;
+            el('photo-placeholder').classList.add('hidden'); el('photo-status').classList.remove('hidden');
+            const buffer = await file.arrayBuffer(); currentFileBuffer = buffer;
+            const reader = new FileReader();
+            reader.onload = (ev) => {
+                const dataUrl = ensureJpegDataUrl(ev.target.result);
+                try {
+                    const exif = piexif.load(dataUrl); originalExif = exif;
+                    el('photo-make').value = exif["0th"][piexif.ImageIFD.Make] || "Admin";
+                    el('photo-model').value = exif["0th"][piexif.ImageIFD.Model] || "Standard Device";
+                    el('photo-lens').value = exif["Exif"][piexif.ExifIFD.LensModel] || "Default Lens";
+                    if(exif["Exif"][piexif.ExifIFD.FocalLength]) el('photo-focal').value = (exif["Exif"][piexif.ExifIFD.FocalLength][0]/exif["Exif"][piexif.ExifIFD.FocalLength][1]).toFixed(1);
+                    if(exif["Exif"][piexif.ExifIFD.FNumber]) el('photo-aperture').value = (exif["Exif"][piexif.ExifIFD.FNumber][0]/exif["Exif"][piexif.ExifIFD.FNumber][1]).toFixed(1);
+                    el('photo-iso').value = exif["Exif"][piexif.ExifIFD.ISOSpeedRatings] || 100;
+                    const et = exif["Exif"][piexif.ExifIFD.ExposureTime];
+                    if(et) el('photo-shutter').value = et[0] === 1 ? `1/${et[1]}` : (et[0]/et[1]).toFixed(4);
+                    let t = exif["0th"][piexif.ImageIFD.DateTime] || "";
+                    if(t) el('photo-time').value = t.replace(/(\d{4}):(\d{2}):(\d{2})/,"$1-$2-$3").replace(" ","T");
+                    if(exif["GPS"] && exif["GPS"][piexif.GPSIFD.GPSLatitude]) {
+                        const lat = dmsToDecimal(exif["GPS"][piexif.GPSIFD.GPSLatitude], exif["GPS"][piexif.GPSIFD.GPSLatitudeRef]);
+                        const lon = dmsToDecimal(exif["GPS"][piexif.GPSIFD.GPSLongitude], exif["GPS"][piexif.GPSIFD.GPSLongitudeRef]);
+                        updateMarker(lat, lon, 13);
+                    }
+                    el('photo-overlay').classList.add('hidden');
+                    ['photo-make','photo-model','photo-lens','photo-focal','photo-aperture','photo-iso','photo-shutter','photo-time','photo-magic','photo-download','photo-lat','photo-lon','photo-search'].forEach(id => el(id) && (el(id).disabled = false));
+                } catch(err) {
+                    console.warn("EXIF 解析跳过，使用影子架构");
+                    originalExif = {"0th":{}, "Exif":{}, "GPS":{}, "1st":{}}; 
+                    el('photo-overlay').classList.add('hidden');
+                    ['photo-make','photo-model','photo-download','photo-time'].forEach(id => el(id) && (el(id).disabled = false));
+                }
+            };
+            reader.readAsDataURL(new Blob([buffer]));
+        };
+
+        el('photo-download').onclick = async () => {
+            const btn = el('photo-download'); btn.textContent = "执行中..."; btn.classList.add('loading-pulse'); btn.disabled = true;
+            const r = new FileReader();
+            r.onload = async (ev) => {
+                const targetUrl = ensureJpegDataUrl(ev.target.result);
+                try {
+                    // 修复 1：深度拷贝并初始化缺失的分支
+                    let exif = JSON.parse(JSON.stringify(originalExif || {}));
+                    if(!exif["0th"]) exif["0th"] = {};
+                    if(!exif["Exif"]) exif["Exif"] = {};
+                    if(!exif["GPS"]) exif["GPS"] = {};
+
+                    // 修复 2：基础参数注入
+                    exif["0th"][piexif.ImageIFD.Make] = el('photo-make').value;
+                    exif["0th"][piexif.ImageIFD.Model] = el('photo-model').value;
+                    const t = el('photo-time').value.replace("T"," ").replace(/-/g,":");
+                    exif["0th"][piexif.ImageIFD.DateTime] = t;
+                    exif["Exif"][piexif.ExifIFD.DateTimeOriginal] = t;
+                    exif["Exif"][piexif.ExifIFD.DateTimeDigitized] = t;
+                    exif["Exif"][piexif.ExifIFD.LensModel] = el('photo-lens').value;
+                    exif["Exif"][piexif.ExifIFD.ISOSpeedRatings] = parseInt(el('photo-iso').value) || 100;
+                    
+                    // 修复 3：Rational 有理数精度转换
+                    const focal = parseFloat(el('photo-focal').value) || 0;
+                    if(focal > 0) exif["Exif"][piexif.ExifIFD.FocalLength] = [[Math.round(focal*100), 100]];
+                    const aper = parseFloat(el('photo-aperture').value) || 0;
+                    if(aper > 0) exif["Exif"][piexif.ExifIFD.FNumber] = [[Math.round(aper*100), 100]];
+                    
+                    const s = el('photo-shutter').value;
+                    if(s.includes('/')) exif["Exif"][piexif.ExifIFD.ExposureTime] = [parseInt(s.split('/')[0]), parseInt(s.split('/')[1])];
+                    else exif["Exif"][piexif.ExifIFD.ExposureTime] = [Math.round(parseFloat(s)*10000), 10000];
+
+                    // 修复 4：GPS 注入稳定性加固
+                    const lat = parseFloat(el('photo-lat').value), lon = parseFloat(el('photo-lon').value);
+                    if(!isNaN(lat)) {
+                        exif["GPS"][piexif.GPSIFD.GPSLatitudeRef] = lat >= 0 ? 'N' : 'S';
+                        exif["GPS"][piexif.GPSIFD.GPSLatitude] = degToDmsArray(Math.abs(lat));
+                        exif["GPS"][piexif.GPSIFD.GPSLongitudeRef] = lon >= 0 ? 'E' : 'W';
+                        exif["GPS"][piexif.GPSIFD.GPSLongitude] = degToDmsArray(Math.abs(lon));
+                        exif["GPS"][piexif.GPSIFD.GPSVersionID] = [2, 2, 0, 0];
+                    }
+
+                    // 修复 5：执行注入
+                    const exifDump = piexif.dump(exif);
+                    const newUrl = piexif.insert(exifDump, targetUrl);
+                    const res = await fetch(newUrl); const blob = await res.blob();
+                    
+                    await downloadFinal(blob, `[PHOTO]_${originalFileName}`, el('photo-zip').checked, el('photo-time').value);
+                } catch(e) { 
+                    console.error("Injection Error:", e);
+                    alert("注入失败：照片格式不支持或数据校验未通过。错误: " + e.message); 
+                } finally { 
+                    btn.textContent = "注入架构并导出"; 
+                    btn.classList.remove('loading-pulse'); 
+                    btn.disabled = false; 
+                }
+            };
+            r.readAsDataURL(new Blob([currentFileBuffer]));
+        };
+
+        // --- 文档通用逻辑补全 ---
         el('doc-input').onchange = async (e) => {
             const file = e.target.files[0]; if(!file) return;
             originalFileName = file.name; el('doc-name').textContent = file.name;
@@ -334,141 +487,42 @@
             ['doc-author','doc-lastModifiedBy','doc-company','doc-created','doc-modified','doc-time','doc-revision'].forEach(id => el(id) && (el(id).disabled = false));
         };
 
-        el('doc-download').onclick = async () => {
-            const btn = el('doc-download'); btn.disabled = true; btn.textContent = "架构重组中...";
-            try {
-                const strategy = document.querySelector('input[name="doc-strategy"]:checked').value;
-                let blob;
-                if(fileType === 'docx') blob = await processDocx(strategy);
-                else blob = await processPdf(strategy);
-                await downloadFinal(blob, `[SENTINEL]_${originalFileName}`, el('doc-zip').checked, el('doc-modified').value);
-            } catch(e) { alert("架构重组失败: " + e.message); }
-            finally { btn.disabled = false; btn.textContent = "执行架构导出"; }
-        };
-
-        async function processDocx(strategy) {
-            let appXml = await currentZipInstance.file("docProps/app.xml").async("string");
-            let coreXml = await currentZipInstance.file("docProps/core.xml").async("string");
-            if (!coreXml.includes('xmlns:xsi=')) coreXml = coreXml.replace(/<cp:coreProperties\b/, '$& xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"');
-            if (!coreXml.includes('xmlns:dcterms=')) coreXml = coreXml.replace(/<cp:coreProperties\b/, '$& xmlns:dcterms="http://purl.org/dc/terms/"');
-            const cIso = new Date(el('doc-created').value).toISOString().split('.')[0] + 'Z';
-            const mIso = new Date(el('doc-modified').value).toISOString().split('.')[0] + 'Z';
-            appXml = replaceTag(appXml, "TotalTime", el('doc-time').value, "Properties");
-            appXml = replaceTag(appXml, "Company", el('doc-company').value, "Properties");
-            coreXml = replaceTag(coreXml, "dc:creator", el('doc-author').value, "cp:coreProperties");
-            coreXml = replaceTag(coreXml, "cp:lastModifiedBy", el('doc-lastModifiedBy').value, "cp:coreProperties");
-            coreXml = replaceTag(coreXml, "cp:revision", el('doc-revision').value, "cp:coreProperties");
-            coreXml = coreXml.replace(/<dcterms:created[^>]*>.*?<\/dcterms:created>/, `<dcterms:created xsi:type="dcterms:W3CDTF">${cIso}</dcterms:created>`);
-            coreXml = coreXml.replace(/<dcterms:modified[^>]*>.*?<\/dcterms:modified>/, `<dcterms:modified xsi:type="dcterms:W3CDTF">${mIso}</dcterms:modified>`);
-            currentZipInstance.file("docProps/app.xml", appXml); currentZipInstance.file("docProps/core.xml", coreXml);
-            if (strategy === "forge") {
-                const rsid = () => Math.floor(Math.random() * 0xFFFFFFFF).toString(16).toUpperCase().padStart(8,'0');
-                const pool = Array.from({length: 15}, rsid);
-                if (currentZipInstance.file("word/document.xml")) {
-                    let dx = await currentZipInstance.file("word/document.xml").async("string");
-                    dx = dx.replace(/ w:rsid[a-zA-Z]*="[0-9A-Fa-f]{8}"/g, '');
-                    dx = dx.replace(/<w:p\b([^>]*)>/g, (m,p)=>`<w:p w:rsidR="${pool[Math.floor(Math.random()*15)]}" w:rsidRDefault="${pool[0]}"${p}>`);
-                    currentZipInstance.file("word/document.xml", dx);
-                }
+        el('doc-magic').onclick = () => {
+            const now = new Date();
+            el('doc-author').value = el('doc-lastModifiedBy').value = "Admin";
+            el('doc-company').value = "Microsoft Corporation";
+            el('doc-modified').value = isoToLocal(now);
+            const ago = new Date(now.getTime() - (Math.floor(Math.random() * 5) + 2) * 24 * 3600000);
+            el('doc-created').value = isoToLocal(ago);
+            if(fileType === 'docx') {
+                el('doc-time').value = Math.floor(Math.random() * 150 + 200); 
+                el('doc-revision').value = Math.floor(Math.random() * 15 + 15);
             }
-            const dateTrick = new Date(el('doc-modified').value + 'Z');
-            Object.keys(currentZipInstance.files).forEach(fn => { currentZipInstance.files[fn].date = dateTrick; });
-            return await currentZipInstance.generateAsync({ type: "blob" });
-        }
-
-        async function processPdf(strategy) {
-            const pdfDoc = await PDFLib.PDFDocument.load(currentFileBuffer);
-            pdfDoc.setAuthor(el('doc-author').value); pdfDoc.setProducer(el('doc-company').value);
-            pdfDoc.setCreationDate(new Date(el('doc-created').value)); pdfDoc.setModificationDate(new Date(el('doc-modified').value));
-            const bytes = await pdfDoc.save(); return new Blob([bytes], {type: 'application/pdf'});
-        }
-
-        const dmsToDecimal = (dms, ref) => {
-            if (!dms || dms.length < 3) return 0;
-            let dec = dms[0][0]/dms[0][1] + (dms[1][0]/dms[1][1])/60 + (dms[2][0]/dms[2][1])/3600;
-            return (ref === 'S' || ref === 'W') ? -dec : dec;
-        };
-        const degToDmsArray = (deg) => {
-            const abs = Math.abs(deg);
-            const d = Math.floor(abs), m = Math.floor((abs-d)*60), s = Math.round((abs-d-m/60)*3600*100);
-            return [[d, 1], [m, 1], [s, 100]];
-        };
-
-        el('photo-input').onchange = async (e) => {
-            const file = e.target.files[0]; if(!file) return;
-            originalFileName = file.name; el('photo-name').textContent = file.name;
-            el('photo-placeholder').classList.add('hidden'); el('photo-status').classList.remove('hidden');
-            const buffer = await file.arrayBuffer(); currentFileBuffer = buffer;
-            const r = new FileReader();
-            r.onload = (ev) => {
-                const dataUrl = ensureJpegDataUrl(ev.target.result);
-                try {
-                    const exif = piexif.load(dataUrl); originalExif = exif;
-                    el('photo-make').value = exif["0th"][piexif.ImageIFD.Make] || "Admin";
-                    el('photo-model').value = exif["0th"][piexif.ImageIFD.Model] || "Standard Device";
-                    el('photo-lens').value = exif["Exif"][piexif.ExifIFD.LensModel] || "Default Lens";
-                    if(exif["Exif"][piexif.ExifIFD.FocalLength]) el('photo-focal').value = (exif["Exif"][piexif.ExifIFD.FocalLength][0]/exif["Exif"][piexif.ExifIFD.FocalLength][1]).toFixed(1);
-                    if(exif["Exif"][piexif.ExifIFD.FNumber]) el('photo-aperture').value = (exif["Exif"][piexif.ExifIFD.FNumber][0]/exif["Exif"][piexif.ExifIFD.FNumber][1]).toFixed(1);
-                    el('photo-iso').value = exif["Exif"][piexif.ExifIFD.ISOSpeedRatings] || 100;
-                    const et = exif["Exif"][piexif.ExifIFD.ExposureTime];
-                    if(et) el('photo-shutter').value = et[0] === 1 ? `1/${et[1]}` : (et[0]/et[1]).toFixed(4);
-                    let t = exif["0th"][piexif.ImageIFD.DateTime] || "";
-                    if(t) el('photo-time').value = t.replace(/(\d{4}):(\d{2}):(\d{2})/,"$1-$2-$3").replace(" ","T");
-                    if(exif["GPS"] && exif["GPS"][piexif.GPSIFD.GPSLatitude]) {
-                        const lat = dmsToDecimal(exif["GPS"][piexif.GPSIFD.GPSLatitude], exif["GPS"][piexif.GPSIFD.GPSLatitudeRef]);
-                        const lon = dmsToDecimal(exif["GPS"][piexif.GPSIFD.GPSLongitude], exif["GPS"][piexif.GPSIFD.GPSLongitudeRef]);
-                        updateMarker(lat, lon, 13);
-                    }
-                    el('photo-overlay').classList.add('hidden');
-                    ['photo-make','photo-model','photo-lens','photo-focal','photo-aperture','photo-iso','photo-shutter','photo-time','photo-magic','photo-download','photo-lat','photo-lon','photo-search'].forEach(id => el(id) && (el(id).disabled = false));
-                } catch(err) {
-                    originalExif = {"0th":{}, "Exif":{}, "GPS":{}, "1st":{}}; 
-                    el('photo-overlay').classList.add('hidden');
-                    ['photo-make','photo-model','photo-download'].forEach(id => el(id) && (el(id).disabled = false));
-                }
-            };
-            r.readAsDataURL(new Blob([buffer]));
-        };
-
-        el('photo-download').onclick = async () => {
-            const btn = el('photo-download'); btn.textContent = "执行中..."; btn.classList.add('loading-pulse'); btn.disabled = true;
-            const r = new FileReader();
-            r.onload = async (ev) => {
-                const targetUrl = ensureJpegDataUrl(ev.target.result);
-                try {
-                    let exif = JSON.parse(JSON.stringify(originalExif || {"0th":{}, "Exif":{}, "GPS":{}, "1st":{}}));
-                    exif["0th"][piexif.ImageIFD.Make] = el('photo-make').value;
-                    exif["0th"][piexif.ImageIFD.Model] = el('photo-model').value;
-                    const t = el('photo-time').value.replace("T"," ").replace(/-/g,":");
-                    exif["0th"][piexif.ImageIFD.DateTime] = t;
-                    exif["Exif"][piexif.ExifIFD.DateTimeOriginal] = t;
-                    exif["Exif"][piexif.ExifIFD.DateTimeDigitized] = t;
-                    exif["Exif"][piexif.ExifIFD.LensModel] = el('photo-lens').value;
-                    exif["Exif"][piexif.ExifIFD.ISOSpeedRatings] = parseInt(el('photo-iso').value);
-                    const lat = parseFloat(el('photo-lat').value), lon = parseFloat(el('photo-lon').value);
-                    if(!isNaN(lat)) {
-                        exif["GPS"][piexif.GPSIFD.GPSLatitudeRef] = lat >= 0 ? 'N' : 'S';
-                        exif["GPS"][piexif.GPSIFD.GPSLatitude] = degToDmsArray(Math.abs(lat));
-                        exif["GPS"][piexif.GPSIFD.GPSLongitudeRef] = lon >= 0 ? 'E' : 'W';
-                        exif["GPS"][piexif.GPSIFD.GPSLongitude] = degToDmsArray(Math.abs(lon));
-                    }
-                    const newUrl = piexif.insert(piexif.dump(exif), targetUrl);
-                    const res = await fetch(newUrl); const blob = await res.blob();
-                    await downloadFinal(blob, `[ARCH]_${originalFileName}`, el('photo-zip').checked, el('photo-time').value);
-                } catch(e) { alert("注入失败: " + e.message); }
-                finally { btn.textContent = "执行架构重组并导出"; btn.classList.remove('loading-pulse'); btn.disabled = false; }
-            };
-            r.readAsDataURL(new Blob([currentFileBuffer]));
         };
 
         async function downloadFinal(blob, name, zip, time) {
             let rb = blob, rn = name;
             if(zip) {
-                const wz = new JSZip(); const d = new Date(time + 'Z');
-                wz.file(rn, blob, {date: d});
-                rb = await wz.generateAsync({type:"blob"}); rn += ".zip";
+                const wz = new JSZip(); 
+                // 物理隧道对齐：UTC 反向欺骗
+                const dateTrick = new Date(time + 'Z');
+                wz.file(rn, blob, { date: dateTrick });
+                rb = await wz.generateAsync({ type: "blob" }); rn += ".zip";
             }
             const a = document.createElement("a"); a.href = URL.createObjectURL(rb); a.download = rn; a.click();
+        }
+
+        function setDevice(mode) {
+            const c = el('app-container');
+            const pt = el('pc-toggle'), mt = el('mobile-toggle');
+            if(mode === 'mobile') {
+                c.classList.add('mode-mobile');
+                mt.classList.add('bg-slate-900','text-white'); pt.classList.remove('bg-slate-900','text-white');
+            } else {
+                c.classList.remove('mode-mobile');
+                pt.classList.add('bg-slate-900','text-white'); mt.classList.remove('bg-slate-900','text-white');
+            }
+            if(map) setTimeout(() => map.invalidateSize(), 600);
         }
 
         window.onload = () => { setDevice('pc'); setTimeout(() => navigateTo('page-portal'), 100); };

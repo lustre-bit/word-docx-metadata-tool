@@ -3,215 +3,267 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Word 文档属性伪装专家</title>
+    <title>Sentinel Metadata Pro | 哨兵文档元数据专家</title>
     <script src="https://cdn.tailwindcss.com"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/jszip/3.10.1/jszip.min.js"></script>
+    <script src="https://unpkg.com/pdf-lib@1.17.1/dist/pdf-lib.min.js"></script>
     <style>
-        body { background-color: #f3f4f6; font-family: system-ui, -apple-system, sans-serif; }
-        .glass-card {
-            background: white;
-            border-radius: 16px;
-            box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -1px rgba(0, 0, 0, 0.06);
+        @import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap');
+        
+        :root {
+            --primary: #2563eb;
+            --primary-dark: #1e40af;
+            --accent: #6366f1;
         }
-        input:disabled { background-color: #f3f4f6; color: #9ca3af; cursor: not-allowed; }
-        .radio-custom:checked + div { border-color: #3b82f6; background-color: #eff6ff; }
-        .radio-custom:checked + div .radio-dot { background-color: #3b82f6; border-color: #3b82f6; }
+
+        body { 
+            background-color: #f8fafc; 
+            font-family: 'Inter', system-ui, -apple-system, sans-serif;
+            color: #1e293b;
+        }
+
+        .premium-shadow {
+            box-shadow: 0 10px 25px -5px rgba(0, 0, 0, 0.05), 0 8px 10px -6px rgba(0, 0, 0, 0.05);
+        }
+
+        .glass-card {
+            background: rgba(255, 255, 255, 0.95);
+            backdrop-filter: blur(10px);
+            border: 1px solid rgba(226, 232, 240, 0.8);
+        }
+
+        input:disabled, button:disabled {
+            cursor: not-allowed;
+            opacity: 0.6;
+        }
+
+        .radio-card:has(input:checked) {
+            border-color: var(--primary);
+            background-color: #f0f7ff;
+            ring: 2px;
+            ring-color: var(--primary);
+        }
+
+        .fade-in { animation: fadeIn 0.5s ease-out; }
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(10px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        .status-dot {
+            height: 8px;
+            width: 8px;
+            border-radius: 50%;
+            display: inline-block;
+        }
     </style>
 </head>
-<body class="min-h-screen p-4 md:p-8 flex items-center justify-center">
+<body class="min-h-screen py-12 px-4">
 
-    <div class="glass-card w-full max-w-3xl p-6 md:p-8">
-        <div class="text-center mb-8">
-            <h1 class="text-3xl font-bold text-blue-600 flex items-center justify-center gap-2">
-                <svg xmlns="http://www.w3.org/2000/svg" width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M14.5 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V7.5L14.5 2z"/><polyline points="14 2 14 8 20 8"/><path d="M16 13H8"/><path d="M16 17H8"/><path d="M10 9H8"/></svg>
-                Word 属性伪装专家 (终极指纹版)
+    <div class="max-w-4xl mx-auto space-y-8 fade-in">
+        <!-- 头部区域 -->
+        <header class="text-center space-y-3">
+            <div class="inline-flex items-center justify-center p-3 bg-blue-600 rounded-2xl shadow-lg shadow-blue-200 mb-2">
+                <svg xmlns="http://www.w3.org/2000/svg" width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="white" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/></svg>
+            </div>
+            <h1 class="text-4xl font-extrabold tracking-tight text-slate-900">
+                Sentinel Metadata <span class="text-blue-600">Pro</span>
             </h1>
-            <p class="text-gray-500 mt-2 text-sm">纯本地处理，文件不上传，彻底修改内部编辑时间、作者等痕迹。</p>
-        </div>
+            <p class="text-slate-500 font-medium max-w-lg mx-auto">
+                专业级文档隐私防护与元数据架构系统。由 <span class="text-blue-600 font-bold">Lustre</span> 官方出品。
+            </p>
+        </header>
 
-        <div class="mb-8">
-            <label class="block text-sm font-semibold text-gray-700 mb-2">1. 选择你的 Word 文档 (.docx)</label>
-            <div class="flex items-center justify-center w-full">
-                <label for="dropzone-file" class="flex flex-col items-center justify-center w-full h-32 border-2 border-dashed border-blue-300 rounded-lg cursor-pointer bg-blue-50 hover:bg-blue-100 transition">
-                    <div class="flex flex-col items-center justify-center pt-5 pb-6">
-                        <svg class="w-8 h-8 mb-2 text-blue-500" aria-hidden="true" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 20 16">
-                            <path stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 13h3a3 3 0 0 0 0-6h-.025A5.56 5.56 0 0 0 16 6.5 5.5 5.5 0 0 0 5.207 5.021C5.137 5.017 5.071 5 5 5a4 4 0 0 0 0 8h2.167M10 15V6m0 0L8 8m2-2 2 2"/>
-                        </svg>
-                        <p class="mb-2 text-sm text-gray-700"><span class="font-semibold text-blue-600">点击上传</span> 或将文件拖拽到此处</p>
-                        <p id="file-name-display" class="text-xs text-gray-500">仅支持 .docx 格式</p>
+        <main class="grid grid-cols-1 gap-8">
+            <!-- 上传板块 -->
+            <section class="glass-card premium-shadow rounded-3xl p-8 transition-all hover:border-blue-200">
+                <div class="flex items-center gap-3 mb-6">
+                    <div class="p-2 bg-blue-100 rounded-lg text-blue-600">
+                        <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="17 8 12 3 7 8"/><line x1="12" y1="3" x2="12" y2="15"/></svg>
                     </div>
-                    <input id="dropzone-file" type="file" accept=".docx" class="hidden" />
+                    <h2 class="text-xl font-bold text-slate-800">导入源文档</h2>
+                </div>
+                
+                <label for="dropzone-file" class="group relative flex flex-col items-center justify-center w-full h-44 border-2 border-dashed border-slate-200 rounded-2xl cursor-pointer bg-slate-50 hover:bg-blue-50 hover:border-blue-300 transition-all duration-300">
+                    <div class="flex flex-col items-center justify-center py-6">
+                        <svg class="w-10 h-10 mb-3 text-slate-400 group-hover:text-blue-500 transition-colors" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M7 16a4 4 0 01-.88-7.903A5 5 0 1115.9 6L16 6a5 5 0 011 9.9M15 13l-3-3m0 0l-3 3m3-3v12"></path></svg>
+                        <p id="file-name-display" class="text-sm text-slate-600 font-medium">点击或拖拽文件至此</p>
+                        <p class="mt-1 text-xs text-slate-400 uppercase tracking-tighter">支持行业标准 .docx 或 .pdf 文件</p>
+                    </div>
+                    <input id="dropzone-file" type="file" accept=".docx,.pdf" class="hidden" />
                 </label>
-            </div>
-        </div>
+            </section>
 
-        <div class="mb-8 relative">
-            <div class="flex justify-between items-center mb-4">
-                <label class="block text-sm font-semibold text-gray-700">2. 修改内部元数据</label>
-                <div class="flex gap-2">
-                    <button id="btn-view-all" disabled class="px-3 py-1 bg-indigo-100 text-indigo-700 rounded-md text-sm font-medium hover:bg-indigo-200 transition disabled:opacity-50 disabled:cursor-not-allowed flex items-center gap-1">
-                        👁️ 浏览所有信息
-                    </button>
-                    <button id="btn-magic" disabled class="px-3 py-1 bg-purple-100 text-purple-700 rounded-md text-sm font-medium hover:bg-purple-200 transition disabled:opacity-50 disabled:cursor-not-allowed flex items-center gap-1">
-                        ✨ 一键生成逼真伪装
-                    </button>
-                </div>
-            </div>
-
-            <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
-                <div>
-                    <label class="block text-xs text-gray-500 mb-1">文档创建者 (作者)</label>
-                    <input type="text" id="prop-author" disabled class="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500">
-                </div>
-                <div>
-                    <label class="block text-xs text-gray-500 mb-1">最后修改者</label>
-                    <input type="text" id="prop-lastModifiedBy" disabled class="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500">
-                </div>
-                <div>
-                    <label class="block text-xs text-gray-500 mb-1">创建日期</label>
-                    <input type="datetime-local" id="prop-created" step="1" disabled class="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500">
-                </div>
-                <div>
-                    <label class="block text-xs text-gray-500 mb-1">最后保存日期</label>
-                    <input type="datetime-local" id="prop-modified" step="1" disabled class="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500">
-                </div>
-                <div>
-                    <label class="block text-xs text-blue-600 font-semibold mb-1">🔥 总编辑时间 (分钟)</label>
-                    <input type="number" id="prop-totalTime" disabled class="w-full px-3 py-2 border border-blue-300 rounded-md bg-blue-50 focus:outline-none focus:ring-2 focus:ring-blue-500">
-                </div>
-                <div>
-                    <label class="block text-xs text-blue-600 font-semibold mb-1">🔥 修订次数</label>
-                    <input type="number" id="prop-revision" disabled class="w-full px-3 py-2 border border-blue-300 rounded-md bg-blue-50 focus:outline-none focus:ring-2 focus:ring-blue-500">
-                </div>
-            </div>
-
-            <div id="overlay" class="absolute inset-0 bg-white/50 z-10 flex items-center justify-center rounded-lg backdrop-blur-[1px]">
-                <span class="text-sm text-gray-600 font-medium px-4 py-2 bg-white rounded-full shadow-sm border border-gray-200">请先上传文件 ⬆️</span>
-            </div>
-        </div>
-
-        <div>
-            <label class="block text-sm font-semibold text-gray-700 mb-3">3. 底层指纹处理策略 (防取证)</label>
-
-            <div class="grid grid-cols-1 md:grid-cols-2 gap-3 mb-4">
-                <label class="cursor-pointer relative">
-                    <input type="radio" name="rsid-strategy" value="erase" class="radio-custom sr-only">
-                    <div class="border-2 border-gray-200 rounded-lg p-3 transition-all">
-                        <div class="flex items-center justify-between mb-1">
-                            <span class="font-semibold text-sm text-gray-800">🔪 彻底擦除模式</span>
-                            <div class="w-4 h-4 rounded-full border-2 border-gray-300 radio-dot flex items-center justify-center transition-all"></div>
+            <!-- 配置板块 -->
+            <section id="config-section" class="glass-card premium-shadow rounded-3xl p-8 relative">
+                <div class="flex flex-col md:flex-row md:items-center justify-between gap-4 mb-8">
+                    <div class="flex items-center gap-3">
+                        <div class="p-2 bg-indigo-100 rounded-lg text-indigo-600">
+                            <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M14.7 6.3a1 1 0 0 0 0 1.4l1.6 1.6a1 1 0 0 0 1.4 0l3.77-3.77a6 6 0 0 1-7.94 7.94l-6.91 6.91a2.12 2.12 0 0 1-3-3l6.91-6.91a6 6 0 0 1 7.94-7.94l-3.76 3.76z"/></svg>
                         </div>
-                        <p class="text-xs text-gray-500">清空底层粘贴痕迹，变成一张“没有任何历史”的干净白纸。</p>
+                        <h2 class="text-xl font-bold text-slate-800">元数据架构配置</h2>
                     </div>
-                </label>
+                    <div class="flex gap-2">
+                        <button id="btn-view-all" disabled class="px-4 py-2 text-sm font-semibold bg-slate-100 text-slate-600 rounded-xl hover:bg-slate-200 transition-colors disabled:opacity-40">数据看板</button>
+                        <button id="btn-magic" disabled class="px-4 py-2 text-sm font-semibold bg-indigo-600 text-white rounded-xl hover:bg-indigo-700 shadow-md shadow-indigo-100 transition-all disabled:opacity-40">智能预设</button>
+                    </div>
+                </div>
 
-                <label class="cursor-pointer relative">
-                    <input type="radio" name="rsid-strategy" value="forge" checked class="radio-custom sr-only">
-                    <div class="border-2 border-gray-200 rounded-lg p-3 transition-all">
-                        <div class="flex items-center justify-between mb-1">
-                            <span class="font-semibold text-sm text-gray-800">✍️ 伪造手工敲击碎片 (推荐)</span>
-                            <div class="w-4 h-4 rounded-full border-2 border-gray-300 radio-dot flex items-center justify-center transition-all"></div>
+                <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+                    <div class="space-y-1">
+                        <label class="text-xs font-bold text-slate-500 uppercase ml-1">文档所有者</label>
+                        <input type="text" id="prop-author" disabled class="w-full px-4 py-3 bg-white border border-slate-200 rounded-xl focus:ring-2 focus:ring-blue-500 outline-none transition-all" placeholder="例如：Admin">
+                    </div>
+                    <div class="space-y-1" id="container-lastModifiedBy">
+                        <label class="text-xs font-bold text-slate-500 uppercase ml-1">最后保存人员</label>
+                        <input type="text" id="prop-lastModifiedBy" disabled class="w-full px-4 py-3 bg-white border border-slate-200 rounded-xl focus:ring-2 focus:ring-blue-500 outline-none transition-all" placeholder="例如：Admin">
+                    </div>
+                    <div class="space-y-1 md:col-span-2">
+                        <label class="text-xs font-bold text-slate-500 uppercase ml-1">注册组织 / 机构</label>
+                        <input type="text" id="prop-company" disabled class="w-full px-4 py-3 bg-white border border-slate-200 rounded-xl focus:ring-2 focus:ring-blue-500 outline-none transition-all" placeholder="例如：Microsoft Corporation">
+                    </div>
+                    <div class="space-y-1">
+                        <label class="text-xs font-bold text-slate-500 uppercase ml-1">创建时间戳</label>
+                        <input type="datetime-local" id="prop-created" step="1" disabled class="w-full px-4 py-3 bg-white border border-slate-200 rounded-xl focus:ring-2 focus:ring-blue-500 outline-none transition-all">
+                    </div>
+                    <div class="space-y-1">
+                        <label class="text-xs font-bold text-slate-500 uppercase ml-1">修改时间戳</label>
+                        <input type="datetime-local" id="prop-modified" step="1" disabled class="w-full px-4 py-3 bg-white border border-slate-200 rounded-xl focus:ring-2 focus:ring-blue-500 outline-none transition-all">
+                    </div>
+                    <div class="space-y-1" id="container-totalTime">
+                        <label class="text-xs font-bold text-blue-600 uppercase ml-1">累计编辑时长 (MIN)</label>
+                        <input type="number" id="prop-totalTime" disabled class="w-full px-4 py-3 bg-blue-50 border border-blue-100 rounded-xl focus:ring-2 focus:ring-blue-500 outline-none transition-all font-semibold text-blue-700">
+                    </div>
+                    <div class="space-y-1" id="container-revision">
+                        <label class="text-xs font-bold text-blue-600 uppercase ml-1">修订版本序列号</label>
+                        <input type="number" id="prop-revision" disabled class="w-full px-4 py-3 bg-blue-50 border border-blue-100 rounded-xl focus:ring-2 focus:ring-blue-500 outline-none transition-all font-semibold text-blue-700">
+                    </div>
+                </div>
+
+                <!-- 审计报告 -->
+                <div id="validation-panel" class="hidden mt-8 p-5 bg-slate-50 rounded-2xl border border-slate-100 space-y-3">
+                    <div class="flex items-center gap-2 text-xs font-bold text-slate-400 uppercase tracking-widest">
+                        <span class="status-dot bg-blue-500"></span> 实时合规性审计报告
+                    </div>
+                    <ul id="validation-list" class="space-y-2 text-sm font-medium"></ul>
+                </div>
+
+                <div id="overlay" class="absolute inset-0 bg-white/60 z-10 flex items-center justify-center rounded-3xl backdrop-blur-[2px]">
+                    <div class="px-5 py-2.5 bg-white rounded-2xl shadow-xl border border-slate-100 text-slate-600 font-semibold flex items-center gap-2">
+                        <svg class="animate-pulse" width="16" height="16" fill="currentColor" viewBox="0 0 24 24"><path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm1 15h-2v-6h2v6zm0-8h-2V7h2v2z"/></svg>
+                        等待文档导入
+                    </div>
+                </div>
+            </section>
+
+            <!-- 深度引擎 -->
+            <section class="glass-card premium-shadow rounded-3xl p-8">
+                <div class="flex items-center gap-3 mb-8">
+                    <div class="p-2 bg-slate-100 rounded-lg text-slate-600">
+                        <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 2l-2 2m-7.61 7.61a5.5 5.5 0 1 1-7.778 7.778 5.5 5.5 0 0 1 7.777-7.777zm0 0L15.5 7.5m0 0l3 3L22 7l-3-3L15.5 7.5z"/></svg>
+                    </div>
+                    <h2 class="text-xl font-bold text-slate-800">深度安全处理引擎</h2>
+                </div>
+
+                <div class="grid grid-cols-1 md:grid-cols-2 gap-4 mb-8">
+                    <label class="cursor-pointer group">
+                        <input type="radio" name="rsid-strategy" value="erase" class="hidden sr-only">
+                        <div class="radio-card border-2 border-slate-100 rounded-2xl p-5 transition-all hover:border-slate-200 h-full relative overflow-hidden">
+                            <div class="flex items-center justify-between mb-3">
+                                <span class="font-bold text-slate-800">彻底净化模式</span>
+                                <div class="w-5 h-5 rounded-full border-2 border-slate-300 radio-dot flex items-center justify-center transition-all">
+                                    <div class="w-2 h-2 rounded-full bg-white scale-0 transition-transform"></div>
+                                </div>
+                            </div>
+                            <p class="text-xs leading-relaxed text-slate-500 font-medium">擦除所有修订指纹、RSID 历史及第三方软件标识。文档将呈现为绝对原始状态。</p>
                         </div>
-                        <p class="text-xs text-gray-500">注入数十个随机编辑指纹，高度模拟人类分批次打字的真实过程。</p>
-                    </div>
-                </label>
-            </div>
+                    </label>
 
-            <div class="mb-4 flex items-center px-1">
-                <input type="checkbox" id="zip-wrapper" checked class="w-4 h-4 text-gray-600 bg-gray-100 border-gray-300 rounded focus:ring-gray-500">
-                <label for="zip-wrapper" class="ml-2 text-sm font-medium text-gray-700">打包为 ZIP 下载 <span class="text-xs text-gray-500">(解压后可完美保留外部系统的“修改时间”)</span></label>
-            </div>
-            <button id="btn-download" disabled class="w-full py-3 bg-blue-600 text-white rounded-lg font-semibold text-lg shadow-md hover:bg-blue-700 transition disabled:opacity-50 disabled:cursor-not-allowed">
-                ⬇️ 生成并下载完美洗白文档
-            </button>
-        </div>
+                    <label class="cursor-pointer group">
+                        <input type="radio" name="rsid-strategy" value="forge" checked class="hidden sr-only">
+                        <div class="radio-card border-2 border-slate-100 rounded-2xl p-5 transition-all hover:border-slate-200 h-full relative overflow-hidden">
+                            <div class="flex items-center justify-between mb-3">
+                                <span class="font-bold text-slate-800">手工指纹模拟</span>
+                                <div class="w-5 h-5 rounded-full border-2 border-slate-300 radio-dot flex items-center justify-center transition-all">
+                                    <div class="w-2 h-2 rounded-full bg-white scale-0 transition-transform"></div>
+                                </div>
+                            </div>
+                            <p class="text-xs leading-relaxed text-slate-500 font-medium">（推荐）架构数十个随机编辑指纹 ID。高度模拟人类长期且非线性的打字修正过程。</p>
+                        </div>
+                    </label>
+                </div>
+
+                <div class="flex items-center justify-between p-4 bg-slate-50 rounded-2xl border border-slate-100 mb-8">
+                    <div class="flex items-center gap-3">
+                        <input type="checkbox" id="zip-wrapper" checked class="w-5 h-5 rounded border-slate-300 text-blue-600 focus:ring-blue-500">
+                        <label for="zip-wrapper" class="text-sm font-semibold text-slate-700">启用 ZIP 隧道传输封装</label>
+                    </div>
+                    <span class="text-[10px] font-bold text-blue-600 bg-blue-100 px-2 py-1 rounded-full uppercase tracking-tighter">同步系统外部物理时间</span>
+                </div>
+
+                <button id="btn-download" disabled class="w-full py-4 bg-slate-900 text-white rounded-2xl font-bold text-lg shadow-xl shadow-slate-200 hover:bg-black hover:-translate-y-0.5 active:translate-y-0 transition-all disabled:opacity-40 disabled:hover:translate-y-0">
+                    执行架构重组并导出
+                </button>
+            </section>
+        </main>
+
+        <footer class="text-center text-slate-400 text-xs font-bold py-8 uppercase tracking-widest">
+            Sentinel Metadata Pro &copy; 2026. 版权所有：Lustre. 纯本地安全审计。
+        </footer>
     </div>
 
-    <div id="info-modal" class="hidden fixed inset-0 bg-black/40 z-50 flex items-center justify-center p-4 backdrop-blur-sm transition-opacity">
-        <div class="glass-card w-full max-w-2xl max-h-[80vh] flex flex-col bg-white shadow-2xl">
-            <div class="p-4 border-b border-gray-200 flex justify-between items-center bg-gray-50 rounded-t-[16px]">
-                <h2 class="text-lg font-bold text-gray-800 flex items-center gap-2">
-                    文档完整内部信息
-                </h2>
-                <button id="btn-close-modal" class="text-gray-400 hover:text-gray-700 transition text-2xl leading-none">&times;</button>
+    <!-- 信息看板 Modal -->
+    <div id="info-modal" class="hidden fixed inset-0 bg-slate-900/60 z-50 flex items-center justify-center p-6 backdrop-blur-md">
+        <div class="glass-card w-full max-w-2xl max-h-[85vh] flex flex-col bg-white rounded-[2rem] shadow-2xl overflow-hidden fade-in">
+            <div class="p-6 border-b border-slate-100 flex justify-between items-center bg-white sticky top-0 z-10">
+                <h2 class="text-xl font-bold text-slate-900">文档底层架构分析</h2>
+                <button id="btnCloseModal" class="p-2 text-slate-400 hover:text-slate-900 hover:bg-slate-100 rounded-full transition-all text-2xl leading-none">&times;</button>
             </div>
             <div class="p-0 overflow-y-auto flex-1">
-                <table class="w-full text-sm text-left text-gray-500">
-                    <thead class="text-xs text-gray-700 uppercase bg-gray-100 sticky top-0">
-                        <tr>
-                            <th scope="col" class="px-6 py-3 w-1/3">属性名称</th>
-                            <th scope="col" class="px-6 py-3">当前值</th>
-                        </tr>
+                <table class="w-full text-sm text-left">
+                    <thead class="text-[10px] text-slate-400 uppercase tracking-widest bg-slate-50/80 sticky top-0 backdrop-blur">
+                        <tr><th class="px-8 py-4 font-bold">属性标签</th><th class="px-8 py-4 font-bold">底层数据</th></tr>
                     </thead>
-                    <tbody id="info-modal-body">
-                    </tbody>
+                    <tbody id="info-modal-body" class="divide-y divide-slate-50"></tbody>
                 </table>
             </div>
-            <div class="p-4 border-t border-gray-200 bg-gray-50 rounded-b-[16px] text-right">
-                <button id="btn-close-modal-bottom" class="px-4 py-2 bg-gray-200 text-gray-800 rounded-lg text-sm font-medium hover:bg-gray-300 transition">关闭</button>
+            <div class="p-6 border-t border-slate-100 bg-white text-right">
+                <button id="btnCloseModalBtn" class="px-6 py-2.5 bg-slate-900 text-white rounded-xl text-sm font-bold hover:bg-black transition-all">完成审计</button>
             </div>
         </div>
     </div>
 
     <script>
-        let currentZip = null;
+        let currentFileData = null;
+        let fileType = ""; 
         let originalFileName = "";
+        let docWordsCount = 0;
+        let currentZipInstance = null;
 
+        // UI 引用
         const fileInput = document.getElementById('dropzone-file');
         const fileNameDisplay = document.getElementById('file-name-display');
         const overlay = document.getElementById('overlay');
         const btnMagic = document.getElementById('btn-magic');
+        const btnViewAll = document.getElementById('btn-view-all');
         const btnDownload = document.getElementById('btn-download');
         const zipWrapperCheckbox = document.getElementById('zip-wrapper');
-
-        const btnViewAll = document.getElementById('btn-view-all');
+        const validationPanel = document.getElementById('validation-panel');
+        const validationList = document.getElementById('validation-list');
         const infoModal = document.getElementById('info-modal');
         const infoModalBody = document.getElementById('info-modal-body');
-        const btnCloseModal = document.getElementById('btn-close-modal');
-        const btnCloseModalBottom = document.getElementById('btn-close-modal-bottom');
-
-        let allExtractedInfo = {};
-
-        const tagDict = {
-            "TotalTime": "🔥 总编辑时间 (分钟)",
-            "cp:revision": "🔥 修订次数",
-            "dcterms:created": "内部创建时间",
-            "dcterms:modified": "最后保存时间",
-            "dc:creator": "创建者 (作者)",
-            "cp:lastModifiedBy": "最后修改者",
-            "Pages": "页数",
-            "Words": "字数"
-        };
-
-        const priorityKeys = ["TotalTime", "cp:revision", "dcterms:created", "dcterms:modified", "dc:creator", "cp:lastModifiedBy"];
+        const btnCloseModal = document.getElementById('btnCloseModal');
+        const btnCloseModalBtn = document.getElementById('btnCloseModalBtn');
 
         const fields = {
             author: document.getElementById('prop-author'),
             lastModifiedBy: document.getElementById('prop-lastModifiedBy'),
+            company: document.getElementById('prop-company'),
             created: document.getElementById('prop-created'),
             modified: document.getElementById('prop-modified'),
             totalTime: document.getElementById('prop-totalTime'),
             revision: document.getElementById('prop-revision')
         };
-
-        function extractXMLTag(xml, tagRegex) {
-            const match = xml.match(tagRegex);
-            return match ? match[1] : "";
-        }
-
-        function replaceOrInsertXMLTag(xml, tag, value, parentEndTag, attributes = "") {
-            const regex = new RegExp(`(<${tag}(?:>| [^>]*>))([\\s\\S]*?)(<\\/${tag}>)`);
-            const attrStr = attributes ? ` ${attributes}` : "";
-            if (regex.test(xml)) {
-                return xml.replace(regex, `<${tag}${attrStr}>${value}</${tag}>`);
-            } else {
-                const insertRegex = new RegExp(`(<\\/${parentEndTag}>)`);
-                if(insertRegex.test(xml)) {
-                    return xml.replace(insertRegex, `<${tag}${attrStr}>${value}</${tag}>$1`);
-                }
-                return xml;
-            }
-        }
 
         function isoToLocal(isoStr) {
             if (!isoStr) return "";
@@ -221,245 +273,248 @@
             } catch (e) { return ""; }
         }
 
-        function extractAllTags(xmlString) {
-            let info = {};
-            const regex = /<([a-zA-Z0-9:-]+)[^>]*>([\s\S]*?)<\/\1>/g;
-            let match;
-            while ((match = regex.exec(xmlString)) !== null) {
-                const tag = match[1];
-                let value = match[2].replace(/<[^>]+>/g, '').trim();
-                if(value) info[tag] = value;
-            }
-            return info;
+        function extractXMLTag(xml, tagRegex) {
+            const match = xml.match(tagRegex);
+            return match ? match[1] : "";
         }
 
-        function getLocalOOXMLTime(localTimeStr) {
-            if (!localTimeStr) return "";
-            let timePart = localTimeStr;
-            if (timePart.split(':').length === 2) {
-                timePart += ':00';
-            }
-            const d = new Date(timePart);
-            const tzo = -d.getTimezoneOffset();
-            const dif = tzo >= 0 ? '+' : '-';
-            const pad = num => String(num).padStart(2, '0');
-            return timePart + dif + pad(Math.floor(Math.abs(tzo) / 60)) + ':' + pad(Math.abs(tzo) % 60);
+        function replaceOrInsertXMLTag(xml, tag, value, parentEndTag, attributes = "") {
+            const regex = new RegExp(`(<${tag}(?:>| [^>]*>))([\\s\\S]*?)(<\\/${tag}>)`);
+            const attrStr = attributes ? ` ${attributes}` : "";
+            if (regex.test(xml)) return xml.replace(regex, `<${tag}${attrStr}>${value}</${tag}>`);
+            const insertRegex = new RegExp(`(<\\/${parentEndTag}>)`);
+            if(insertRegex.test(xml)) return xml.replace(insertRegex, `<${tag}${attrStr}>${value}</${tag}>$1`);
+            return xml;
         }
 
         fileInput.addEventListener('change', async function(e) {
             const file = e.target.files[0];
             if (!file) return;
-
             originalFileName = file.name;
-            fileNameDisplay.textContent = `已加载: ${originalFileName}`;
-            fileNameDisplay.className = "text-sm text-green-600 font-medium";
+            fileNameDisplay.textContent = originalFileName;
+            fileNameDisplay.classList.add('font-bold', 'text-blue-600');
+            
+            const arrayBuffer = await file.arrayBuffer();
+            currentFileData = arrayBuffer;
 
-            try {
-                const arrayBuffer = await file.arrayBuffer();
-                currentZip = await JSZip.loadAsync(arrayBuffer);
-
-                const appXml = await currentZip.file("docProps/app.xml").async("string");
-                const coreXml = await currentZip.file("docProps/core.xml").async("string");
-
-                fields.totalTime.value = extractXMLTag(appXml, /<TotalTime[^>]*>(.*?)<\/TotalTime>/) || "0";
-                fields.revision.value = extractXMLTag(coreXml, /<cp:revision[^>]*>(.*?)<\/cp:revision>/) || "1";
-                fields.author.value = extractXMLTag(coreXml, /<dc:creator[^>]*>(.*?)<\/dc:creator>/) || "User";
-                fields.lastModifiedBy.value = extractXMLTag(coreXml, /<cp:lastModifiedBy[^>]*>(.*?)<\/cp:lastModifiedBy>/) || "User";
-
-                fields.created.value = isoToLocal(extractXMLTag(coreXml, /<dcterms:created[^>]*>(.*?)<\/dcterms:created>/));
-                fields.modified.value = isoToLocal(extractXMLTag(coreXml, /<dcterms:modified[^>]*>(.*?)<\/dcterms:modified>/));
-
-                const appInfo = extractAllTags(appXml);
-                const coreInfo = extractAllTags(coreXml);
-                allExtractedInfo = { ...appInfo, ...coreInfo };
-
-                allExtractedInfo["TotalTime"] = fields.totalTime.value;
-                allExtractedInfo["cp:revision"] = fields.revision.value;
-
-                overlay.style.display = 'none';
-                Object.values(fields).forEach(input => input.disabled = false);
-                btnMagic.disabled = false;
-                btnDownload.disabled = false;
-                btnViewAll.disabled = false;
-
-            } catch (error) {
-                alert("读取文件失败，请确保它是一个有效的 .docx 文件！");
+            if (file.name.toLowerCase().endsWith('.docx')) {
+                fileType = "docx";
+                document.getElementById('container-totalTime').style.visibility = 'visible';
+                document.getElementById('container-revision').style.visibility = 'visible';
+                await handleDocx(arrayBuffer);
+            } else if (file.name.toLowerCase().endsWith('.pdf')) {
+                fileType = "pdf";
+                document.getElementById('container-totalTime').style.visibility = 'hidden';
+                document.getElementById('container-revision').style.visibility = 'hidden';
+                await handlePdf(arrayBuffer);
             }
+            
+            overlay.style.display = 'none';
+            Object.values(fields).forEach(i => i.disabled = false);
+            btnMagic.disabled = btnDownload.disabled = btnViewAll.disabled = false;
         });
 
-        btnMagic.addEventListener('click', () => {
-            const defaultAuthor = "Admin";
-            fields.author.value = defaultAuthor;
-            fields.lastModifiedBy.value = defaultAuthor;
+        async function handleDocx(arrayBuffer) {
+            currentZipInstance = await JSZip.loadAsync(arrayBuffer);
+            const appXml = await currentZipInstance.file("docProps/app.xml").async("string");
+            const coreXml = await currentZipInstance.file("docProps/core.xml").async("string");
 
+            // 移除特定个人标识，使用通用默认值
+            fields.totalTime.value = extractXMLTag(appXml, /<TotalTime[^>]*>(.*?)<\/TotalTime>/) || "0";
+            fields.company.value = extractXMLTag(appXml, /<Company[^>]*>(.*?)<\/Company>/) || "Microsoft";
+            fields.revision.value = extractXMLTag(coreXml, /<cp:revision[^>]*>(.*?)<\/cp:revision>/) || "1";
+            fields.author.value = extractXMLTag(coreXml, /<dc:creator[^>]*>(.*?)<\/dc:creator>/) || "Admin";
+            fields.lastModifiedBy.value = extractXMLTag(coreXml, /<cp:lastModifiedBy[^>]*>(.*?)<\/cp:lastModifiedBy>/) || "Admin";
+            fields.created.value = isoToLocal(extractXMLTag(coreXml, /<dcterms:created[^>]*>(.*?)<\/dcterms:created>/));
+            fields.modified.value = isoToLocal(extractXMLTag(coreXml, /<dcterms:modified[^>]*>(.*?)<\/dcterms:modified>/));
+            docWordsCount = parseInt(extractXMLTag(appXml, /<Words[^>]*>(.*?)<\/Words>/)) || 0;
+            performValidation();
+        }
+
+        async function handlePdf(arrayBuffer) {
+            const pdfDoc = await PDFLib.PDFDocument.load(arrayBuffer);
+            fields.author.value = pdfDoc.getAuthor() || "Admin";
+            fields.company.value = pdfDoc.getProducer() || "Microsoft Word"; 
+            fields.lastModifiedBy.value = pdfDoc.getCreator() || "Microsoft Word";
+            fields.created.value = isoToLocal(pdfDoc.getCreationDate());
+            fields.modified.value = isoToLocal(pdfDoc.getModificationDate());
+            performValidation();
+        }
+
+        function performValidation() {
+            const logs = [];
+            const createdDate = new Date(fields.created.value);
+            const modifiedDate = new Date(fields.modified.value);
             const now = new Date();
-            fields.modified.value = new Date(now.getTime() - now.getTimezoneOffset() * 60000).toISOString().slice(0, 19);
 
-            const daysAgo = Math.floor(Math.random() * 6) + 2;
-            const randomOffset = (Math.random() * 8 * 60 * 60 * 1000) + (Math.random() * 60 * 60 * 1000) + Math.floor(Math.random() * 60000);
-            const createdDate = new Date(now.getTime() - (daysAgo * 24 * 60 * 60 * 1000) - randomOffset);
-            fields.created.value = new Date(createdDate.getTime() - createdDate.getTimezoneOffset() * 60000).toISOString().slice(0, 19);
-
-            fields.totalTime.value = Math.floor(Math.random() * 270) + 180;
-            fields.revision.value = Math.floor(Math.random() * 30) + 15;
-
-            btnMagic.textContent = "✅ 已填入逼真数据";
-            setTimeout(() => btnMagic.textContent = "✨ 一键生成逼真伪装", 2000);
-        });
-
-        function renderInfoTable() {
-            infoModalBody.innerHTML = '';
-            const keys = Object.keys(allExtractedInfo);
-            if (keys.length === 0) return;
-
-            keys.sort((a, b) => {
-                const indexA = priorityKeys.indexOf(a);
-                const indexB = priorityKeys.indexOf(b);
-                if (indexA !== -1 && indexB !== -1) return indexA - indexB;
-                if (indexA !== -1) return -1;
-                if (indexB !== -1) return 1;
-                return a.localeCompare(b);
-            });
-
-            keys.forEach(key => {
-                const tr = document.createElement('tr');
-                const isPriority = priorityKeys.includes(key);
-                tr.className = isPriority ? "bg-blue-50 border-b border-blue-100" : "bg-white border-b hover:bg-gray-50";
-                const displayName = tagDict[key] ? `<span class="font-bold ${isPriority ? 'text-blue-700' : 'text-gray-900'}">${tagDict[key]}</span> <span class="text-xs text-gray-400 ml-1">(${key})</span>` : `<span class="text-gray-500">${key}</span>`;
-
-                let value = allExtractedInfo[key];
-                if (key.includes('created') || key.includes('modified')) {
-                    try { value = new Date(value).toLocaleString(); } catch(e){}
+            if (createdDate > modifiedDate) {
+                logs.push({ type: 'error', msg: '时间冲突：创建时间不得晚于导出时间。' });
+            }
+            if (modifiedDate > now) {
+                logs.push({ type: 'warning', msg: '时间异常：导出时间位于未来。' });
+            }
+            
+            if (fileType === "docx") {
+                const totalTime = parseInt(fields.totalTime.value) || 0;
+                if (docWordsCount > 300 && totalTime < 30) {
+                    logs.push({ type: 'warning', msg: '审计风险：字数规模与编辑时长明显失衡。' });
                 }
+            }
 
-                tr.innerHTML = `
-                    <td class="px-6 py-4">${displayName}</td>
-                    <td class="px-6 py-4 text-gray-800 break-all font-mono text-sm">${value}</td>
-                `;
-                infoModalBody.appendChild(tr);
+            validationList.innerHTML = logs.length ? '' : '<li class="text-blue-600 flex items-center gap-2 font-semibold">符合行业合规性审计准则</li>';
+            logs.forEach(l => {
+                const li = document.createElement('li');
+                li.className = `flex items-center gap-2 ${l.type === 'error' ? 'text-red-500 font-bold' : 'text-amber-500'}`;
+                li.innerHTML = `<span class="w-1.5 h-1.5 rounded-full bg-current"></span> ${l.msg}`;
+                validationList.appendChild(li);
             });
+            validationPanel.classList.remove('hidden');
         }
 
-        btnViewAll.addEventListener('click', () => { renderInfoTable(); infoModal.classList.remove('hidden'); });
-        const closeModal = () => infoModal.classList.add('hidden');
-        btnCloseModal.addEventListener('click', closeModal);
-        btnCloseModalBottom.addEventListener('click', closeModal);
-        infoModal.addEventListener('click', (e) => { if (e.target === infoModal) closeModal(); });
+        btnMagic.onclick = () => {
+            const now = new Date();
+            // 不再使用 Lustre 作为默认作者，确保隐私与隐蔽性
+            fields.author.value = "Admin";
+            fields.company.value = "Microsoft Corporation";
+            fields.lastModifiedBy.value = "Admin";
+            fields.modified.value = isoToLocal(now);
+            const ago = new Date(now.getTime() - (Math.floor(Math.random() * 4) + 2) * 24 * 3600000);
+            fields.created.value = isoToLocal(ago);
+            if(fileType === "docx") {
+                fields.totalTime.value = Math.floor(Math.random() * 200 + 160);
+                fields.revision.value = Math.floor(Math.random() * 25 + 10);
+            }
+            performValidation();
+            btnMagic.textContent = "✓ 预设完成";
+            setTimeout(() => btnMagic.textContent = "✨ 智能预设", 2000);
+        };
 
-        function generateRsid() {
-            return Math.floor(Math.random() * 0xFFFFFFFF).toString(16).toUpperCase().padStart(8, '0');
-        }
-
-        btnDownload.addEventListener('click', async () => {
-            if (!currentZip) return;
-            btnDownload.textContent = "⏳ 正在进行深度洗白处理...";
-            btnDownload.disabled = true;
-
+        btnDownload.onclick = async () => {
+            const btn = btnDownload;
+            btn.textContent = "执行架构重组中...";
+            btn.disabled = true;
             try {
-                let appXml = await currentZip.file("docProps/app.xml").async("string");
-                let coreXml = await currentZip.file("docProps/core.xml").async("string");
-
+                let finalBlob;
                 const strategy = document.querySelector('input[name="rsid-strategy"]:checked').value;
 
-                if (coreXml.indexOf('xmlns:xsi=') === -1) {
-                    coreXml = coreXml.replace(/<cp:coreProperties\b/, '$& xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"');
-                }
-                if (coreXml.indexOf('xmlns:dcterms=') === -1) {
-                    coreXml = coreXml.replace(/<cp:coreProperties\b/, '$& xmlns:dcterms="http://purl.org/dc/terms/"');
-                }
-
-                const createdOOXML = getLocalOOXMLTime(fields.created.value);
-                const modifiedOOXML = getLocalOOXMLTime(fields.modified.value);
-
-                appXml = replaceOrInsertXMLTag(appXml, "TotalTime", fields.totalTime.value, "Properties");
-                appXml = replaceOrInsertXMLTag(appXml, "Application", "Microsoft Office Word", "Properties");
-                appXml = replaceOrInsertXMLTag(appXml, "AppVersion", "16.0000", "Properties");
-                appXml = replaceOrInsertXMLTag(appXml, "Template", "Normal.dotm", "Properties");
-
-                coreXml = replaceOrInsertXMLTag(coreXml, "dc:creator", fields.author.value, "cp:coreProperties");
-                coreXml = replaceOrInsertXMLTag(coreXml, "cp:lastModifiedBy", fields.lastModifiedBy.value, "cp:coreProperties");
-                coreXml = replaceOrInsertXMLTag(coreXml, "cp:revision", fields.revision.value, "cp:coreProperties");
-
-                coreXml = replaceOrInsertXMLTag(coreXml, "dcterms:created", createdOOXML, "cp:coreProperties", 'xsi:type="dcterms:W3CDTF"');
-                coreXml = replaceOrInsertXMLTag(coreXml, "dcterms:modified", modifiedOOXML, "cp:coreProperties", 'xsi:type="dcterms:W3CDTF"');
-
-                currentZip.file("docProps/app.xml", appXml);
-                currentZip.file("docProps/core.xml", coreXml);
-
-                if (strategy === "erase" || strategy === "forge") {
-
-                    const revisionCount = parseInt(fields.revision.value) || 15;
-                    const rsidPool = [];
-                    for(let i=0; i<revisionCount; i++) rsidPool.push(generateRsid());
-                    const getRandomRsid = () => rsidPool[Math.floor(Math.random() * rsidPool.length)];
-                    const rootRsid = rsidPool[0];
-
-                    if (currentZip.file("word/settings.xml")) {
-                        let settingsXml = await currentZip.file("word/settings.xml").async("string");
-                        settingsXml = settingsXml.replace(/<w:rsids>[\s\S]*?<\/w:rsids>/g, '');
-
-                        if (strategy === "forge") {
-                            const rsidsXml = `<w:rsids><w:rsidRoot w:val="${rootRsid}"/>` +
-                                             rsidPool.map(r => `<w:rsid w:val="${r}"/>`).join('') +
-                                             `</w:rsids>`;
-                            settingsXml = settingsXml.replace(/(<\/w:settings>)/, `${rsidsXml}$1`);
-                        }
-                        currentZip.file("word/settings.xml", settingsXml);
-                    }
-
-                    if (currentZip.file("word/document.xml")) {
-                        let documentXml = await currentZip.file("word/document.xml").async("string");
-                        documentXml = documentXml.replace(/ w:rsid[a-zA-Z]*="[0-9A-Fa-f]{8}"/g, '');
-
-                        if (strategy === "forge") {
-                            documentXml = documentXml.replace(/<w:p\b([^>]*)>/g, (match, p1) => {
-                                return `<w:p w:rsidR="${getRandomRsid()}" w:rsidRDefault="${getRandomRsid()}"${p1}>`;
-                            });
-                            documentXml = documentXml.replace(/<w:r\b([^>]*)>/g, (match, p1) => {
-                                return `<w:r w:rsidR="${getRandomRsid()}"${p1}>`;
-                            });
-                        }
-                        currentZip.file("word/document.xml", documentXml);
-                    }
+                if (fileType === "docx") {
+                    finalBlob = await processDocx(strategy);
+                } else {
+                    finalBlob = await processPdf(strategy);
                 }
 
-                let fakeStr = fields.modified.value;
-                if (fakeStr.split(':').length === 2) fakeStr += ':00';
-                const fakeInternalDate = new Date(fakeStr + 'Z');
-
-                Object.keys(currentZip.files).forEach(function (filename) {
-                    currentZip.files[filename].date = fakeInternalDate;
-                });
-
-                const docxContent = await currentZip.generateAsync({ type: "blob" });
-
-                let finalContent = docxContent;
-                let downloadFileName = `[指纹重铸]_${originalFileName}`;
+                let finalDownloadName = `[SENTINEL_ARCH]_${originalFileName}`;
+                let downloadData = finalBlob;
 
                 if (zipWrapperCheckbox.checked) {
-                    const wrapperZip = new JSZip();
-                    wrapperZip.file(downloadFileName, docxContent, { date: fakeInternalDate });
-                    finalContent = await wrapperZip.generateAsync({ type: "blob" });
-                    downloadFileName += ".zip";
+                    const wz = new JSZip();
+                    // 同样使用反向偏移解决 ZIP 物理日期问题
+                    const dateTrick = new Date(fields.modified.value + 'Z'); 
+                    wz.file(finalDownloadName, finalBlob, { date: dateTrick });
+                    downloadData = await wz.generateAsync({ type: "blob" });
+                    finalDownloadName += ".zip";
                 }
 
-                const downloadLink = document.createElement("a");
-                downloadLink.href = URL.createObjectURL(finalContent);
-                downloadLink.download = downloadFileName;
-
-                document.body.appendChild(downloadLink);
-                downloadLink.click();
-                document.body.removeChild(downloadLink);
-
-                btnDownload.textContent = "🎉 洗白成功并下载！";
-            } catch (error) {
-                alert("处理失败！" + error.message);
+                const a = document.createElement("a");
+                a.href = URL.createObjectURL(downloadData);
+                a.download = finalDownloadName;
+                a.click();
+                btn.textContent = "架构成功";
+            } catch (e) {
+                alert("失败: " + e.message);
             } finally {
-                setTimeout(() => {
-                    btnDownload.textContent = "⬇️ 生成并下载完美洗白文档";
-                    btnDownload.disabled = false;
-                }, 3000);
+                setTimeout(() => { btn.textContent = "执行架构重组并导出"; btn.disabled = false; }, 3000);
             }
+        };
+
+        async function processDocx(strategy) {
+            let appXml = await currentZipInstance.file("docProps/app.xml").async("string");
+            let coreXml = await currentZipInstance.file("docProps/core.xml").async("string");
+
+            if (!coreXml.includes('xmlns:xsi=')) coreXml = coreXml.replace(/<cp:coreProperties\b/, '$& xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"');
+            if (!coreXml.includes('xmlns:dcterms=')) coreXml = coreXml.replace(/<cp:coreProperties\b/, '$& xmlns:dcterms="http://purl.org/dc/terms/"');
+
+            const createdIso = new Date(fields.created.value).toISOString().split('.')[0] + 'Z';
+            const modifiedIso = new Date(fields.modified.value).toISOString().split('.')[0] + 'Z';
+
+            appXml = replaceOrInsertXMLTag(appXml, "TotalTime", fields.totalTime.value, "Properties");
+            appXml = replaceOrInsertXMLTag(appXml, "Company", fields.company.value, "Properties");
+            appXml = replaceOrInsertXMLTag(appXml, "Application", "Microsoft Office Word", "Properties");
+            appXml = replaceOrInsertXMLTag(appXml, "AppVersion", "16.0000", "Properties");
+
+            coreXml = replaceOrInsertXMLTag(coreXml, "dc:creator", fields.author.value, "cp:coreProperties");
+            coreXml = replaceOrInsertXMLTag(coreXml, "cp:lastModifiedBy", fields.lastModifiedBy.value, "cp:coreProperties");
+            coreXml = replaceOrInsertXMLTag(coreXml, "cp:revision", fields.revision.value, "cp:coreProperties");
+            coreXml = replaceOrInsertXMLTag(coreXml, "dcterms:created", createdIso, "cp:coreProperties", 'xsi:type="dcterms:W3CDTF"');
+            coreXml = replaceOrInsertXMLTag(coreXml, "dcterms:modified", modifiedIso, "cp:coreProperties", 'xsi:type="dcterms:W3CDTF"');
+
+            currentZipInstance.file("docProps/app.xml", appXml);
+            currentZipInstance.file("docProps/core.xml", coreXml);
+
+            if (strategy === "forge") {
+                const rsid = () => Math.floor(Math.random() * 0xFFFFFFFF).toString(16).toUpperCase().padStart(8,'0');
+                const pool = Array.from({length: 15}, rsid);
+                if (currentZipInstance.file("word/document.xml")) {
+                    let dx = await currentZipInstance.file("word/document.xml").async("string");
+                    dx = dx.replace(/ w:rsid[a-zA-Z]*="[0-9A-Fa-f]{8}"/g, '');
+                    dx = dx.replace(/<w:p\b([^>]*)>/g, (m,p)=>`<w:p w:rsidR="${pool[Math.floor(Math.random()*pool.length)]}" w:rsidRDefault="${pool[0]}"${p}>`);
+                    currentZipInstance.file("word/document.xml", dx);
+                }
+                if (currentZipInstance.file("word/settings.xml")) {
+                    let sx = await currentZipInstance.file("word/settings.xml").async("string");
+                    sx = sx.replace(/<w:rsids>[\s\S]*?<\/w:rsids>/g, '');
+                    const rsidsBlock = `<w:rsids><w:rsidRoot w:val="${pool[0]}"/>` + pool.map(r => `<w:rsid w:val="${r}"/>`).join('') + `</w:rsids>`;
+                    sx = sx.replace(/(<\/w:settings>)/, `${rsidsBlock}$1`);
+                    currentZipInstance.file("word/settings.xml", sx);
+                }
+            } else {
+                if (currentZipInstance.file("word/document.xml")) {
+                    let dx = await currentZipInstance.file("word/document.xml").async("string");
+                    dx = dx.replace(/ w:rsid[a-zA-Z]*="[0-9A-Fa-f]{8}"/g, '');
+                    currentZipInstance.file("word/document.xml", dx);
+                }
+            }
+
+            const fakeDate = new Date(fields.modified.value + 'Z');
+            Object.keys(currentZipInstance.files).forEach(f => { currentZipInstance.files[f].date = fakeDate; });
+            return await currentZipInstance.generateAsync({ type: "blob" });
+        }
+
+        async function processPdf(strategy) {
+            const pdfDoc = await PDFLib.PDFDocument.load(currentFileData);
+            pdfDoc.setAuthor(fields.author.value);
+            pdfDoc.setCreator(fields.lastModifiedBy.value);
+            pdfDoc.setProducer(fields.company.value);
+            pdfDoc.setCreationDate(new Date(fields.created.value));
+            pdfDoc.setModificationDate(new Date(fields.modified.value));
+            
+            if (strategy === "erase") {
+                pdfDoc.setKeywords([]);
+                pdfDoc.setSubject("");
+            }
+
+            const pdfBytes = await pdfDoc.save();
+            return new Blob([pdfBytes], { type: 'application/pdf' });
+        }
+
+        btnViewAll.onclick = () => {
+            infoModalBody.innerHTML = '';
+            const row = (k, v) => `<tr class="hover:bg-slate-50 transition-colors"><td class="px-8 py-4 font-bold text-slate-800">${k}</td><td class="px-8 py-4 font-mono text-slate-500 break-all">${v}</td></tr>`;
+            infoModalBody.innerHTML += row("核心引擎类型", fileType.toUpperCase());
+            infoModalBody.innerHTML += row("当前拟定作者", fields.author.value);
+            infoModalBody.innerHTML += row("预设机构名称", fields.company.value);
+            infoModalBody.innerHTML += row("底层创建时间", fields.created.value);
+            infoModalBody.innerHTML += row("底层导出时间", fields.modified.value);
+            if(fileType === "docx") {
+                infoModalBody.innerHTML += row("拟态编辑时长", fields.totalTime.value + " min");
+                infoModalBody.innerHTML += row("版本迭代指纹", "Rev." + fields.revision.value);
+            }
+            infoModal.classList.remove('hidden');
+        };
+        
+        btnCloseModal.onclick = btnCloseModalBtn.onclick = () => infoModal.classList.add('hidden');
+        [fields.created, fields.modified, fields.totalTime, fields.revision].forEach(i => {
+            i.addEventListener('input', performValidation);
         });
     </script>
 </body>
